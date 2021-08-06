@@ -1,0 +1,50 @@
+{
+  "name": "syseleven-restic",
+  "version": "1.0.0",
+  "author": "Mike Fröhner @ SysEleven GmbH",
+  "summary": "Puppet module to configure Restic systemd service to backup/forget/restore data.",
+  "license": "Apache-2.0",
+  "source": "https://github.com/syseleven/puppet-restic.git",
+  "project_page": "https://github.com/syseleven/puppet-restic.git",
+  "issues_url": "https://github.com/syseleven/puppet-restic/issues",
+  "dependencies": [
+    {
+      "name": "camptocamp/systemd",
+      "version_requirement": ">= 3.0.0"
+    },
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": ">= 6.4.0"
+    },
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 6.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "16.04",
+        "18.04",
+        "20.04"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "9",
+        "10"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 6.21.0 < 8.0.0"
+    }
+  ],
+  "pdk-version": "2.2.0",
+  "template-url": "https://github.com/puppetlabs/pdk-templates",
+  "template-ref": "tags/2.2.0-0-g2381db6"
+}

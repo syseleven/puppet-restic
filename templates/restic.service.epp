@@ -1,0 +1,14 @@
+<%- |
+    $commands,
+    $config,
+    $group,
+    $user,
+| -%>
+[Service]
+User=<%= $user %>
+Group=<%= $group %>
+Type=oneshot
+EnvironmentFile=<%= $config %>
+<% $commands.delete_undef_values.each |$command| { %>
+ExecStart=<%= $command %>
+<% } %>

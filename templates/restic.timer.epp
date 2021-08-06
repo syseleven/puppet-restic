@@ -1,0 +1,5 @@
+<%- |
+    String $timer,
+| -%>
+[Timer]
+OnCalendar=<%= $timer %>
