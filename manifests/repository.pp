@@ -8,7 +8,9 @@ define restic::repository (
   Optional[Restic::Path]              $backup_path      = $restic::backup_path,
   Optional[String[1]]                 $backup_pre_cmd   = $restic::backup_pre_cmd,
   Optional[String[1]]                 $backup_post_cmd  = $restic::backup_post_cmd,
+  Optional[String[1]]                 $backup_timer     = $restic::backup_timer,
   Stdlib::Absolutepath                $binary           = $restic::binary,
+  Optional[String[1]]                 $bucket           = $restic::bucket,
   Boolean                             $enable_backup    = $restic::enable_backup,
   Boolean                             $enable_forget    = $restic::enable_forget,
   Boolean                             $enable_restore   = $restic::enable_restore,
@@ -16,28 +18,35 @@ define restic::repository (
   Variant[Array[String[1]],String[1]] $forget_flags     = $restic::forget_flags,
   Optional[String[1]]                 $forget_pre_cmd   = $restic::forget_pre_cmd,
   Optional[String[1]]                 $forget_post_cmd  = $restic::forget_post_cmd,
-  String[1]                           $forget_timer     = $restic::timer,
+  Optional[String[1]]                 $forget_timer     = $restic::forget_timer,
   Variant[Array[String[1]],String[1]] $global_flags     = $restic::global_flags,
   String[1]                           $group            = $restic::group,
+  Optional[String[1]]                 $host             = $restic::host,
   String[1]                           $id               = $restic::id,
   Boolean                             $init_repo        = $restic::init_repo,
   String[1]                           $key              = $restic::key,
   Optional[String[1]]                 $password         = $restic::password,
   Boolean                             $prune            = $restic::prune,
-  Optional[String[1]]                 $repository_host  = $restic::repository_host,
-  Optional[String[1]]                 $repository_name  = $restic::repository_name,
-  Restic::Repository::Type            $repository_type  = $restic::repository_type,
   Variant[Array[String[1]],String[1]] $restore_flags    = $restic::restore_flags,
-  Stdlib::Absolutepath                $restore_path     = $restic::restore_path,
+  Optional[Stdlib::Absolutepath]      $restore_path     = $restic::restore_path,
   Optional[String[1]]                 $restore_pre_cmd  = $restic::restore_pre_cmd,
   Optional[String[1]]                 $restore_post_cmd = $restic::restore_post_cmd,
   Optional[String[1]]                 $restore_snapshot = $restic::restore_snapshot,
-  String[1]                           $timer            = $restic::timer,
+  Optional[String[1]]                 $restore_timer    = $restic::restore_timer,
+  Restic::Repository::Type            $type             = $restic::type,
   String[1]                           $user             = $restic::user,
 ) {
   assert_private()
 
-  $repository  = "${repository_type}:${repository_host}/${repository_name}"
+  if $enable_backup and $backup_path == undef {
+    fail("restic::repository[${title}]: You have to set \$backup_path if you enable the backup!")
+  }
+
+  if $enable_restore and $restore_path == undef {
+    fail("restic::repository[${title}]: You have to set \$restore_path if you enable the restore!")
+  }
+
+  $repository  = "${type}:${host}/${bucket}"
   $config_file = "/etc/default/restic_${title}"
 
   if $init_repo {
@@ -77,10 +86,10 @@ define restic::repository (
         target  => $config_file,
       }
     }
-  }
-
-  if $enable_backup and $backup_path == undef {
-    fail("restic::backup[${title}]: You have to set \$backup_path if you enable the backup!")
+  } else {
+    concat { $config_file:
+      ensure => 'absent',
+    }
   }
 
   ##
@@ -90,19 +99,19 @@ define restic::repository (
     $backup_pre_cmd,
     "${binary} backup \$GLOBAL_FLAGS \$BACKUP_FLAGS",
     $backup_post_cmd,
-  ]
+  ].delete_undef_values
 
   $backup_keys = {
-    'BACKUP_FLAGS' => [ $backup_flags, $backup_path ].flatten.join(' '),
+    'BACKUP_FLAGS' => [ $backup_flags, $backup_path, ].flatten.join(' '),
   }
 
   restic::service { "restic_backup_${title}":
-    commands => $backup_commands,
+    commands => $backup_commands.delete_undef_values,
     config   => $config_file,
     configs  => $backup_keys,
     enable   => $enable_backup,
     group    => $user,
-    timer    => $timer,
+    timer    => $backup_timer,
     user     => $group,
   }
 
@@ -122,7 +131,7 @@ define restic::repository (
   }
 
   restic::service { "restic_forget_${title}":
-    commands => $forget_commands,
+    commands => $forget_commands.delete_undef_values,
     config   => $config_file,
     configs  => $forget_keys,
     enable   => $enable_forget,
@@ -145,11 +154,12 @@ define restic::repository (
   }
 
   restic::service { "restic_restore_${title}":
-    commands => $restore_commands,
+    commands => $restore_commands.delete_undef_values,
     config   => $config_file,
     configs  => $restore_keys,
     enable   => $enable_restore,
     group    => $user,
+    timer    => $restore_timer,
     user     => $group,
   }
 }

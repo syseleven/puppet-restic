@@ -1,6 +1,6 @@
 {
   "name": "syseleven-restic",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Mike Fröhner @ SysEleven GmbH",
   "summary": "Puppet module to configure Restic systemd service to backup/forget/restore data.",
   "license": "Apache-2.0",
@@ -25,23 +25,14 @@
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "16.04",
-        "18.04",
         "20.04"
-      ]
-    },
-    {
-      "operatingsystem": "Debian",
-      "operatingsystemrelease": [
-        "9",
-        "10"
       ]
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 6.21.0 < 8.0.0"
+      "version_requirement": ">= 6.0.0 < 8.0.0"
     }
   ],
   "pdk-version": "2.2.0",

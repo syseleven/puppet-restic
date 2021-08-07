@@ -1,10 +1,5 @@
 # @summary
-#   Module to manage restic repositories.
-#   Supported features:
-#     - initialize a Restic repository
-#     - create a backup to S3 Restic repository
-#     - restore a backup from S3 Restic repository
-#     - forget backup snapshots in a S3 Restic repository
+#   Module to manage restic repositories via systemd service/timer.
 #
 # @param package_ensure
 #   Version for Restic to be installed
@@ -16,7 +11,7 @@
 #   Name for Restic package
 #
 # @param repositories
-#   A hash of repositories to create
+#   Hash of repositoriries
 #
 # @param backup_flags
 #   Default flags for `restic backup <flags>`. See `restic backup --help`
@@ -30,8 +25,14 @@
 # @param backup_post_cmd
 #   Default command to run after `restic backup`
 #
+# @param backup_timer
+#   Default systemd timer for backup see: https://wiki.archlinux.de/title/Systemd/Timers
+#
 # @param binary
 #   Default path to the Restic binary
+#
+# @param bucket
+#   Default name for the Restic repository
 #
 # @param enable_backup
 #   Default enable the backup service
@@ -41,15 +42,6 @@
 #
 # @param enable_restore
 #   Default enable the restore service
-#
-# @param id
-#   Default S3 storage id for an S3 bucket
-#
-# @param global_flags
-#   Default global flags for `restic <flags>`. See `restic --help`
-#
-# @param group
-#   Default group for systemd services
 #
 # @param forget
 #   Default hash with `keep-*` => `value` to configure forget flags
@@ -63,8 +55,23 @@
 # @param forget_post_cmd
 #   Default command to run after `restic forget`
 #
+# @param forget_timer
+#   Default systemd timer for forget see: https://wiki.archlinux.de/title/Systemd/Timers
+#
+# @param global_flags
+#   Default global flags for `restic <flags>`. See `restic --help`
+#
+# @param group
+#   Default group for systemd services
+#
+# @param host
+#   Default hostname for the Restic repository
+#
+# @param id
+#   Default S3 storage id for an S3 bucket
+#
 # @param init_repo
-#   Enable the initialization of the repository
+#   Default enable the initialization of the repository
 #
 # @param key
 #   Default S3 storage key for an S3 bucket
@@ -74,15 +81,6 @@
 #
 # @param prune
 #   Default enable `--prune` flag for `restic forget`
-#
-# @param repository_host
-#   Default hostname for the Restic repository
-#
-# @param repository_name
-#   Default name for the Restic repository
-#
-# @param repository_type
-#   Default name for the Restic repository. Only S3 supported
 #
 # @param restore_flags
 #   Default flags for `restic restore <flags>`. See `restic restore --help`
@@ -99,8 +97,11 @@
 # @param restore_snapshot
 #   Default Restic snapshot id used by the restore
 #
-# @param timer
-#   Default systemd timer see: https://wiki.archlinux.de/title/Systemd/Timers
+# @param restore_timer
+#   Default systemd timer for restore see: https://wiki.archlinux.de/title/Systemd/Timers
+#
+# @param type
+#   Default name for the Restic repository. Only S3 supported
 #
 # @param user
 #   Default user for systemd services
@@ -119,37 +120,39 @@ class restic (
   Restic::Repositories                $repositories     = {},
 
   ##
-  ## default values
+  ## default values for restic::resositories
   ##
   Variant[Array[String[1]],String[1]] $backup_flags     = [],
   Optional[Restic::Path]              $backup_path      = undef,
   Optional[String[1]]                 $backup_pre_cmd   = undef,
   Optional[String[1]]                 $backup_post_cmd  = undef,
+  Optional[String[1]]                 $backup_timer     = undef,
   Stdlib::Absolutepath                $binary           = '/usr/bin/restic',
-  Boolean                             $enable_backup    = true,
+  Optional[String]                    $bucket           = undef,
+  Boolean                             $enable_backup    = false,
   Boolean                             $enable_forget    = false,
   Boolean                             $enable_restore   = false,
-  Optional[String]                    $id               = undef,
-  Variant[Array[String[1]],String[1]] $global_flags     = [],
-  Optional[String]                    $group            = 'root',
   Restic::Forget                      $forget           = {},
   Variant[Array[String[1]],String[1]] $forget_flags     = [],
   Optional[String[1]]                 $forget_pre_cmd   = undef,
   Optional[String[1]]                 $forget_post_cmd  = undef,
+  Optional[String[1]]                 $forget_timer     = undef,
+  Variant[Array[String[1]],String[1]] $global_flags     = [],
+  Optional[String]                    $group            = 'root',
+  Optional[String]                    $host             = undef,
+  Optional[String]                    $id               = undef,
   Boolean                             $init_repo        = true,
   Optional[String]                    $key              = undef,
   Optional[String]                    $password         = undef,
   Boolean                             $prune            = false,
-  Optional[String]                    $repository_host  = undef,
-  Optional[String]                    $repository_name  = undef,
-  Optional[Restic::Repository::Type]  $repository_type  = undef,
   Variant[Array[String[1]],String[1]] $restore_flags    = [],
-  Stdlib::Absolutepath                $restore_path     = "/tmp/restic_restore/${title}",
+  Optional[Stdlib::Absolutepath]      $restore_path     = undef,
   Optional[String[1]]                 $restore_pre_cmd  = undef,
   Optional[String[1]]                 $restore_post_cmd = undef,
-  Optional[String[1]]                 $restore_snapshot = 'latest',
-  String                              $timer            = 'Mon..Sun *:00:00',
-  Optional[String]                    $user             = 'root',
+  String[1]                           $restore_snapshot = 'latest',
+  Optional[String[1]]                 $restore_timer    = undef,
+  String[1]                           $user             = 'root',
+  Restic::Repository::Type            $type             = 's3',
 ) {
   contain restic::package
   contain restic::reload

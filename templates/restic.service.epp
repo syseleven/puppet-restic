@@ -9,6 +9,6 @@ User=<%= $user %>
 Group=<%= $group %>
 Type=oneshot
 EnvironmentFile=<%= $config %>
-<% $commands.delete_undef_values.each |$command| { %>
+<% $commands.each |$command| { -%>
 ExecStart=<%= $command %>
-<% } %>
+<% } -%>

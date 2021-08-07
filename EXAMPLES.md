@@ -6,16 +6,16 @@
 class { 'restic':
   backups => {
     'backup1' => {
-      backup_path     => '/absolute/path',
-      id              => 's3id',
-      key             => 's3key',
-      repository_host => 'host.name',
-      repository_name => 'bucket_name/bucket_dir',
-      repository_type => 's3',
-      password        => 'somegoodpassword',
-      forget          => {
+      backup_path => '/absolute/path',
+      bucket      => 'bucket_name/bucket_dir',
+      forget      => {
         'keep-last' => 10,
       },
+      host        => 'host.name',
+      id          => 's3id',
+      key         => 's3key',
+      password    => 'somegoodpassword',
+      type        => 's3',
     },
   },
 }
@@ -30,9 +30,9 @@ restic::backups:
     backup_path: '/absolute/path'
     id: 's3id'
     key: 's3key'
-    repository_host: 'host.name'
-    repository_name: 'bucket_name/bucket_dir'
-    repository_type: 's3'
+    host: 'host.name'
+    bucket: 'bucket_name/bucket_dir'
+    type: 's3'
     password: 'somegoodpassword'
     forget:
       keep-last: 10
@@ -44,22 +44,25 @@ restic::backups:
 classes:
   - restic
 
+restic::enable_backup: true
+restic::enable_forget: true
+restic::backup_timer: 'Mon..Sun *:00:00'
+restic::forget_timer: Mon..Sun 23:00:00
+restic::host: 'host.name'
 restic::id: 's3id'
 restic::key: 's3key'
-restic::repository_host: 'host.name'
-restic::repository_type: 's3'
-restic::enable_forget: true
+restic::type: 's3'
 restic::forget:
   keep-last: 10
 restic::prune: true
 restic::backups:
   backup1:
     backup_path: '/absolute/path1'
-    repository_name: 'bucket_name/backup1'
+    bucket: 'bucket_name/backup1'
     password: 'somegoodpassword'
   backup2:
     backup_path: '/absolute/path2'
-    repository_name: 'bucket_name/backup2'
+    bucket: 'bucket_name/backup2'
     password: 'somegoodpassword'
 ```
 
@@ -71,16 +74,17 @@ classes:
 
 restic::id: 's3id'
 restic::key: 's3key'
-restic::repository_host: 'host.name'
-restic::repository_type: 's3'
+restic::host: 'host.name'
+restic::type: 's3'
 restic::backups:
   backup1:
     backup_path: '/absolute/path1'
-    repository_name: 'bucket_name/backup1'
+    bucket: 'bucket_name/backup1'
+    enable_backup: true
     password: 'somegoodpassword'
   backup2:
+    enable_backup: false
     path: '/absolute/path2'
-    enable: false
 ```
 
 ## Only restore job
@@ -91,14 +95,17 @@ classes:
 
 restic::id: 's3id'
 restic::key: 's3key'
-restic::repository_host: 'host.name'
-restic::repository_type: 's3'
+restic::host: 'host.name'
+restic::type: 's3'
 restic::backups:
-  backup1:
-    backup_path: '/absolute/path1'
-    enable_backup: false
+  restore1:
     restore_path: '/another/path1'
     enable_restore: true
-    repository_name: 'bucket_name/backup1'
+    bucket: 'bucket_name/restore1'
     password: 'somegoodpassword'
+```
+
+You can execute the job manually via:
+```shell
+# systemctl start restic_restore_restore1.service
 ```

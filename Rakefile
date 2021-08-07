@@ -8,6 +8,25 @@ require 'puppet_blacksmith/rake_tasks' if Bundler.rubygems.find_name('puppet-bla
 require 'github_changelog_generator/task' if Bundler.rubygems.find_name('github_changelog_generator').any?
 require 'puppet-strings/tasks' if Bundler.rubygems.find_name('puppet-strings').any?
 
+
+PuppetLint::RakeTask.new :lint do |config|
+  # Set specific log_format
+  config.log_format = '%{path}:%{line} - %{check} - %{message}'
+
+  # List of checks to disable
+  config.disable_checks = [
+    '80chars',
+    '140chars',
+    'manifest_whitespace_opening_brace_before',
+    'manifest_whitespace_opening_bracket_after',
+    'manifest_whitespace_opening_bracket_before',
+    'manifest_whitespace_closing_bracket_before',
+  ]
+
+  # Should the task fail if there were any warnings, defaults to false
+  config.fail_on_warnings = true
+end
+
 def changelog_user
   return unless Rake.application.top_level_tasks.include? "changelog"
   returnVal = nil || JSON.load(File.read('metadata.json'))['author']
@@ -101,5 +120,12 @@ rescue Gem::LoadError
   task default: :spec
 end
 
+task 'metadata_lint' do
+  require 'metadata_json_lint'
+
+  MetadataJsonLint.parse('./metadata.json')
+end
+
+
 desc 'Run syntax, lint, and spec tests.'
-task test: [:syntax, :lint, :rubocop, :spec]
+task test: [:syntax, :lint, :rubocop, :spec, :metadata_lint]

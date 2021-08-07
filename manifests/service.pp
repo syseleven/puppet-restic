@@ -10,7 +10,7 @@ define restic::service (
   $enable,
   $group,
   $user,
-  $timer = undef,
+  $timer,
 ) {
   assert_private()
 
@@ -29,7 +29,7 @@ define restic::service (
 
   systemd::unit_file { "${title}.service":
     ensure    => $ensure,
-    content   => epp("${module_name}/restic.service.epp", { commands => $commands.delete_undef_values, config => $config, group => $group, user => $user, }),
+    content   => epp("${module_name}/restic.service.epp", { commands => $commands, config => $config, group => $group, user => $user, }),
     group     => 'root',
     mode      => '0444',
     owner     => 'root',
@@ -37,12 +37,25 @@ define restic::service (
     show_diff => true,
   }
 
-  if $timer {
-    systemd::timer { "${title}.timer":
-      ensure        => $ensure,
-      active        => $enable,
-      enable        => $enable,
-      timer_content => epp("${module_name}/restic.timer.epp", { timer => $timer, }),
-    }
+  $timer_ensure = $timer ? {
+    String => $ensure,
+    Undef  => 'absent',
+  }
+
+  $timer_enable = $timer ? {
+    String => $enable,
+    Undef  => false,
+  }
+
+  $timer_content = $timer ? {
+    String => epp("${module_name}/restic.timer.epp", { timer => $timer, }),
+    Undef  => undef,
+  }
+
+  systemd::timer { "${title}.timer":
+    ensure        => $timer_ensure,
+    active        => $timer_enable,
+    enable        => $timer_enable,
+    timer_content => $timer_content,
   }
 }

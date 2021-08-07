@@ -48,6 +48,36 @@ gems.each do |gem_name, gem_params|
   gem gem_name, *gem_params
 end
 
+gem 'metadata-json-lint'
+gem 'puppet-lint'
+gem 'puppet-lint-absolute_classname-check'
+gem 'puppet-lint-absolute_template_path'
+gem 'puppet-lint-alias-check'
+gem 'puppet-lint-anchor-check'
+gem 'puppet-lint-duplicate_class_parameters-check'
+gem 'puppet-lint-empty_lines_around_body-check'
+gem 'puppet-lint-legacy_facts-check'
+gem 'puppet-lint-manifest_whitespace-check'
+gem 'puppet-lint-no_file_path_attribute-check'
+gem 'puppet-lint-no_symbolic_file_modes-check'
+gem 'puppet-lint-package_ensure-check'
+gem 'puppet-lint-param-docs'
+gem 'puppet-lint-resource_reference_syntax'
+gem 'puppet-lint-strict_indent-check'
+gem 'puppet-lint-top_scope_facts-check'
+gem 'puppet-lint-topscope-variable-check'
+gem 'puppet-lint-trailing_comma-check'
+gem 'puppet-lint-trailing_newline-check'
+gem 'puppet-lint-uncuddled_else-check'
+gem 'puppet-lint-unquoted_string-check'
+gem 'puppet-lint-variable_contains_upcase'
+gem 'puppet-lint-version_comparison-check'
+gem 'puppet-syntax'
+gem 'ra10ke'
+gem 'rubocop'
+gem 'rubocop-performance'
+gem 'rubocop-rspec'
+
 # Evaluate Gemfile.local and ~/.gemfile if they exist
 extra_gemfiles = [
   "#{__FILE__}.local",
