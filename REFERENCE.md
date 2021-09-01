@@ -240,7 +240,7 @@ Default value: `[]`
 
 ##### <a name="group"></a>`group`
 
-Data type: `Optional[String]`
+Data type: `String`
 
 Default group for systemd services
 

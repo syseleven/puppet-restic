@@ -138,7 +138,7 @@ class restic (
   Optional[String[1]]                 $forget_post_cmd  = undef,
   Optional[String[1]]                 $forget_timer     = undef,
   Variant[Array[String[1]],String[1]] $global_flags     = [],
-  Optional[String]                    $group            = 'root',
+  String                              $group            = 'root',
   Optional[String]                    $host             = undef,
   Optional[String]                    $id               = undef,
   Boolean                             $init_repo        = true,
@@ -151,8 +151,8 @@ class restic (
   Optional[String[1]]                 $restore_post_cmd = undef,
   String[1]                           $restore_snapshot = 'latest',
   Optional[String[1]]                 $restore_timer    = undef,
-  String[1]                           $user             = 'root',
   Restic::Repository::Type            $type             = 's3',
+  String[1]                           $user             = 'root',
 ) {
   contain restic::package
   contain restic::reload
