@@ -110,9 +110,9 @@ define restic::repository (
     config   => $config_file,
     configs  => $backup_keys,
     enable   => $enable_backup,
-    group    => $user,
+    group    => $group,
     timer    => $backup_timer,
-    user     => $group,
+    user     => $user,
   }
 
   ##
