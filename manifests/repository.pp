@@ -50,7 +50,7 @@ define restic::repository (
   $config_file = "/etc/default/restic_${title}"
 
   if $init_repo {
-    exec { "restic_init_${repository}":
+    exec { "restic_init_${repository}_${title}":
       command     => "${binary} init",
       environment => [
         "AWS_ACCESS_KEY_ID=${id}",

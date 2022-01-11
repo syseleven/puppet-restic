@@ -24,7 +24,7 @@ shared_examples 'repository' do |title, config, defaults, params|
 
   if values['init_repo']
     it {
-      is_expected.to contain_exec("restic_init_#{repository}").only_with(
+      is_expected.to contain_exec("restic_init_#{repository}_#{title}").only_with(
         {
           'command' => "#{values['binary']} init",
           'environment' => [
