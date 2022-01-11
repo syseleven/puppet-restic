@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.0.2
+
+**Bugfixes**
+- user and group assignment for the backup service resource (Issue #3)
+- deduplicate resource for initialize restic repository (Issue #4)
+- user and group assignment for the restore/forget service resource (no issue)
+
+## Release 2.0.1
+
+**Bugfixes**
+- run failed if backup, restore and forget have been disabled (Issue #1)
+
 ## Release 2.0.0
 
 **Features**
@@ -27,8 +39,6 @@ All notable changes to this project will be documented in this file.
 
 **Known Issues**
 - none
-
-
 
 ## Release 1.0.0
 

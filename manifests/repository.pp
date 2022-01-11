@@ -135,9 +135,9 @@ define restic::repository (
     config   => $config_file,
     configs  => $forget_keys,
     enable   => $enable_forget,
-    group    => $user,
+    group    => $group,
     timer    => $forget_timer,
-    user     => $group,
+    user     => $user,
   }
 
   ##
@@ -158,8 +158,8 @@ define restic::repository (
     config   => $config_file,
     configs  => $restore_keys,
     enable   => $enable_restore,
-    group    => $user,
+    group    => $group,
     timer    => $restore_timer,
-    user     => $group,
+    user     => $user,
   }
 }
