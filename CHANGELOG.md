@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.0.3
+
+**Bugfixes**
+- fix file unsecure file permissions (Issue #6)
+
 ## Release 2.0.2
 
 **Bugfixes**
