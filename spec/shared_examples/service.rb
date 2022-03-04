@@ -59,7 +59,7 @@ shared_examples 'service' do |title, commands, config, configs, enable, group, u
         'ensure'    => ensure_value,
         'content'   => service_content.join("\n"),
         'group'     => 'root',
-        'mode'      => '0444',
+        'mode'      => '0440',
         'owner'     => 'root',
         'path'      => '/etc/systemd/system',
         'show_diff' => true,

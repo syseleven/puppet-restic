@@ -31,7 +31,7 @@ define restic::service (
     ensure    => $ensure,
     content   => epp("${module_name}/restic.service.epp", { commands => $commands, config => $config, group => $group, user => $user, }),
     group     => 'root',
-    mode      => '0444',
+    mode      => '0440',
     owner     => 'root',
     path      => '/etc/systemd/system',
     show_diff => true,

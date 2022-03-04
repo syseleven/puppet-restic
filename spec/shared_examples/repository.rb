@@ -50,7 +50,7 @@ shared_examples 'repository' do |title, config, defaults, params|
           'ensure'         => 'present',
           'ensure_newline' => true,
           'group'          => 'root',
-          'mode'           => '0644',
+          'mode'           => '0440',
           'owner'          => 'root',
           'show_diff'      => true,
         },

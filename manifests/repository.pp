@@ -67,7 +67,7 @@ define restic::repository (
       ensure         => 'present',
       ensure_newline => true,
       group          => 'root',
-      mode           => '0644',
+      mode           => '0440',
       owner          => 'root',
       show_diff      => true,
     }
