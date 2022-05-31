@@ -172,7 +172,7 @@ Data type: `Boolean`
 
 Default enable the backup service
 
-Default value: ``false``
+Default value: ``true``
 
 ##### <a name="enable_forget"></a>`enable_forget`
 

@@ -129,7 +129,7 @@ class restic (
   Optional[String[1]]                 $backup_timer     = undef,
   Stdlib::Absolutepath                $binary           = '/usr/bin/restic',
   Optional[String]                    $bucket           = undef,
-  Boolean                             $enable_backup    = false,
+  Boolean                             $enable_backup    = true,
   Boolean                             $enable_forget    = false,
   Boolean                             $enable_restore   = false,
   Restic::Forget                      $forget           = {},
