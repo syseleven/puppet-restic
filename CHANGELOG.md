@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.1.0
+
+**Bugfixes**
+- default for enable_backup set to true to reflect docs (Issue #9)
+
 ## Release 2.0.3
 
 **Bugfixes**
