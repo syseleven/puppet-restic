@@ -12,7 +12,8 @@ This module manages Restic repositories via Puppet with systemd service and time
 
 ## Module Description
 
-By default **$enable_backup**, **$enable_forget**, and **$enable_restore** are **false**.
+By default **$enable_backup** is true.
+By default **$enable_forget** and **$enable_restore** are **false**.
 
 For each repository you enable a systemd service will be installed. To trigger the service automatically you have to set a [systemd timer value](https://wiki.archlinux.de/title/Systemd/Timers) (**$backup_timer**, **$forget_timer**, **$restore_timer**).
 
@@ -55,7 +56,6 @@ restic::repositories:
       - /some/other/path
     backup_timer: Mon..Sun 20:00:00
     bucket: bucket_name/backup1
-    enable_backup: true
     host: some.host.name
     id: a3f5173hdsks934
     key: y7ahajhsd3uzasa
