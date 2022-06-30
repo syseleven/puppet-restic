@@ -107,5 +107,5 @@ restic::backups:
 
 You can execute the job manually via:
 ```shell
-# systemctl start restic_restore_restore1.service
+systemctl start restic_restore_restore1.service
 ```

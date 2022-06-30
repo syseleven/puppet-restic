@@ -9,23 +9,24 @@
   "issues_url": "https://github.com/syseleven/puppet-restic/issues",
   "dependencies": [
     {
-      "name": "camptocamp/systemd",
-      "version_requirement": ">= 3.0.0"
+      "name": "puppet/systemd",
+      "version_requirement": ">= 3.10.0"
     },
     {
       "name": "puppetlabs/concat",
-      "version_requirement": ">= 6.4.0"
+      "version_requirement": ">= 7.2.0"
     },
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 6.0.0"
+      "version_requirement": ">= 8.2.0"
     }
   ],
   "operatingsystem_support": [
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "20.04"
+        "20.04",
+        "22.04"
       ]
     }
   ],

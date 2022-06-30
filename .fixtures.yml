@@ -4,11 +4,11 @@
 fixtures:
   forge_modules:
     systemd:
-      repo: 'camptocamp/systemd'
-      ref: '3.0.0'
+      repo: 'puppet/systemd'
+      ref: '3.10.0'
     concat:
       repo: 'puppetlabs/concat'
-      ref: '6.4.0'
+      ref: '7.2.0'
     stdlib:
       repo: 'puppetlabs/stdlib'
-      ref: '6.0.0'
+      ref: '8.2.0'

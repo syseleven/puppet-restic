@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-shared_examples 'repository' do |title, config, defaults, params|
-  values = defaults.merge(params).merge(config)
+shared_examples 'repository' do |title, config, params|
+  values = params.merge(config)
 
   if values['enable_backup'] && values['backup_path'].nil?
     it {
