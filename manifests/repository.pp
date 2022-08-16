@@ -73,10 +73,10 @@ define restic::repository (
     }
 
     $config_keys = {
-      'AWS_ACCESS_KEY_ID'     => $id,
-      'AWS_SECRET_ACCESS_KEY' => $key,
+      'AWS_ACCESS_KEY_ID'     => Sensitive($id),
+      'AWS_SECRET_ACCESS_KEY' => Sensitive($key),
       'GLOBAL_FLAGS'          => [ $global_flags, ].flatten.join(' '),
-      'RESTIC_PASSWORD'       => $password,
+      'RESTIC_PASSWORD'       => Sensitive($password),
       'RESTIC_REPOSITORY'     => $repository,
     }
 
