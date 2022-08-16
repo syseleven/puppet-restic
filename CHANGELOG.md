@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.2.1
+
+**Features**
+- Add Sensitive data type for s3 id, key, and password.
+
+## Release 2.2.0
+
+**Features**
+- Add 22.04 upport
+
 ## Release 2.1.0
 
 **Bugfixes**
