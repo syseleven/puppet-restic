@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.2.2
+
+**Features**
+- make id, key, and password Sensitive
+
+## Release 2.2.1
+
+- broken release
+
+## Release 2.2.0
+
+**Features**
+- add 22.04 support
+
 ## Release 2.1.0
 
 **Bugfixes**
