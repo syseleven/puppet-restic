@@ -31,6 +31,7 @@
 * [`Restic::Path`](#resticpath): Valid path parameter
 * [`Restic::Repositories`](#resticrepositories): A data hash with restic backup configuration
 * [`Restic::Repository::Type`](#resticrepositorytype): All valid repository types
+* [`Restic::Secure`](#resticsecure): Valid path parameter
 
 ## Classes
 
@@ -160,7 +161,7 @@ Default value: `'/usr/bin/restic'`
 
 ##### <a name="bucket"></a>`bucket`
 
-Data type: `Optional[String]`
+Data type: `Optional[String[1]]`
 
 Default name for the Restic repository
 
@@ -240,7 +241,7 @@ Default value: `[]`
 
 ##### <a name="group"></a>`group`
 
-Data type: `String`
+Data type: `String[1]`
 
 Default group for systemd services
 
@@ -248,7 +249,7 @@ Default value: `'root'`
 
 ##### <a name="host"></a>`host`
 
-Data type: `Optional[String]`
+Data type: `Optional[String[1]]`
 
 Default hostname for the Restic repository
 
@@ -256,7 +257,7 @@ Default value: ``undef``
 
 ##### <a name="id"></a>`id`
 
-Data type: `Optional[String]`
+Data type: `Optional[Restic::Secure]`
 
 Default S3 storage id for an S3 bucket
 
@@ -272,7 +273,7 @@ Default value: ``true``
 
 ##### <a name="key"></a>`key`
 
-Data type: `Optional[String]`
+Data type: `Optional[Restic::Secure]`
 
 Default S3 storage key for an S3 bucket
 
@@ -280,7 +281,7 @@ Default value: ``undef``
 
 ##### <a name="password"></a>`password`
 
-Data type: `Optional[String]`
+Data type: `Optional[Restic::Secure]`
 
 Default encryption password for the Restic repository
 
@@ -437,5 +438,15 @@ Alias of
 
 ```puppet
 Enum['s3']
+```
+
+### <a name="resticsecure"></a>`Restic::Secure`
+
+Valid path parameter
+
+Alias of
+
+```puppet
+Variant[String, Sensitive[String]]
 ```
 
