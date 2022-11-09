@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.2.3
+
+**Features**
+- revert Sensitive id, key, and password
+
 ## Release 2.2.2
 
 **Features**
