@@ -19,10 +19,10 @@
 
 #### Public Defined types
 
+* [`restic::repository`](#resticrepository): Configure a Restic service to backup/forget/restore data.
 
 #### Private Defined types
 
-* `restic::repository`: Configure a Restic service to backup/forget/restore data.
 * `restic::service`: Configure a restic service
 
 ### Data types
@@ -361,6 +361,296 @@ Default user for systemd services
 Default value: `'root'`
 
 ## Defined types
+
+### <a name="resticrepository"></a>`restic::repository`
+
+Configure a Restic service to backup/forget/restore data.
+
+#### Parameters
+
+The following parameters are available in the `restic::repository` defined type:
+
+* [`backup_flags`](#backup_flags)
+* [`backup_path`](#backup_path)
+* [`backup_pre_cmd`](#backup_pre_cmd)
+* [`backup_post_cmd`](#backup_post_cmd)
+* [`backup_timer`](#backup_timer)
+* [`binary`](#binary)
+* [`bucket`](#bucket)
+* [`enable_backup`](#enable_backup)
+* [`enable_forget`](#enable_forget)
+* [`enable_restore`](#enable_restore)
+* [`forget`](#forget)
+* [`forget_flags`](#forget_flags)
+* [`forget_pre_cmd`](#forget_pre_cmd)
+* [`forget_post_cmd`](#forget_post_cmd)
+* [`forget_timer`](#forget_timer)
+* [`global_flags`](#global_flags)
+* [`group`](#group)
+* [`host`](#host)
+* [`id`](#id)
+* [`init_repo`](#init_repo)
+* [`key`](#key)
+* [`password`](#password)
+* [`prune`](#prune)
+* [`restore_flags`](#restore_flags)
+* [`restore_path`](#restore_path)
+* [`restore_pre_cmd`](#restore_pre_cmd)
+* [`restore_post_cmd`](#restore_post_cmd)
+* [`restore_snapshot`](#restore_snapshot)
+* [`restore_timer`](#restore_timer)
+* [`type`](#type)
+* [`user`](#user)
+
+##### <a name="backup_flags"></a>`backup_flags`
+
+Data type: `Variant[Array[String[1]],String[1]]`
+
+Default flags for `restic backup <flags>`. See `restic backup --help`
+
+Default value: `[]`
+
+##### <a name="backup_path"></a>`backup_path`
+
+Data type: `Optional[Restic::Path]`
+
+Default directory to backed up
+
+Default value: ``undef``
+
+##### <a name="backup_pre_cmd"></a>`backup_pre_cmd`
+
+Data type: `Optional[String[1]]`
+
+Default command to run before `restic backup`
+
+Default value: ``undef``
+
+##### <a name="backup_post_cmd"></a>`backup_post_cmd`
+
+Data type: `Optional[String[1]]`
+
+Default command to run after `restic backup`
+
+Default value: ``undef``
+
+##### <a name="backup_timer"></a>`backup_timer`
+
+Data type: `Optional[String[1]]`
+
+Default systemd timer for backup see: https://wiki.archlinux.de/title/Systemd/Timers
+
+Default value: ``undef``
+
+##### <a name="binary"></a>`binary`
+
+Data type: `Stdlib::Absolutepath`
+
+Default path to the Restic binary
+
+Default value: `'/usr/bin/restic'`
+
+##### <a name="bucket"></a>`bucket`
+
+Data type: `Optional[String]`
+
+Default name for the Restic repository
+
+Default value: ``undef``
+
+##### <a name="enable_backup"></a>`enable_backup`
+
+Data type: `Boolean`
+
+Default enable the backup service
+
+Default value: ``true``
+
+##### <a name="enable_forget"></a>`enable_forget`
+
+Data type: `Boolean`
+
+Default enable the forget service
+
+Default value: ``false``
+
+##### <a name="enable_restore"></a>`enable_restore`
+
+Data type: `Boolean`
+
+Default enable the restore service
+
+Default value: ``false``
+
+##### <a name="forget"></a>`forget`
+
+Data type: `Restic::Forget`
+
+Default hash with `keep-*` => `value` to configure forget flags
+
+Default value: `{}`
+
+##### <a name="forget_flags"></a>`forget_flags`
+
+Data type: `Variant[Array[String[1]],String[1]]`
+
+Default flags for `restic forget <flags>`. See `restic forget --help`
+
+Default value: `[]`
+
+##### <a name="forget_pre_cmd"></a>`forget_pre_cmd`
+
+Data type: `Optional[String[1]]`
+
+Default command to run before `restic forget`
+
+Default value: ``undef``
+
+##### <a name="forget_post_cmd"></a>`forget_post_cmd`
+
+Data type: `Optional[String[1]]`
+
+Default command to run after `restic forget`
+
+Default value: ``undef``
+
+##### <a name="forget_timer"></a>`forget_timer`
+
+Data type: `Optional[String[1]]`
+
+Default systemd timer for forget see: https://wiki.archlinux.de/title/Systemd/Timers
+
+Default value: ``undef``
+
+##### <a name="global_flags"></a>`global_flags`
+
+Data type: `Variant[Array[String[1]],String[1]]`
+
+Default global flags for `restic <flags>`. See `restic --help`
+
+Default value: `[]`
+
+##### <a name="group"></a>`group`
+
+Data type: `String`
+
+Default group for systemd services
+
+Default value: `'root'`
+
+##### <a name="host"></a>`host`
+
+Data type: `Optional[String]`
+
+Default hostname for the Restic repository
+
+Default value: ``undef``
+
+##### <a name="id"></a>`id`
+
+Data type: `Optional[String]`
+
+Default S3 storage id for an S3 bucket
+
+Default value: ``undef``
+
+##### <a name="init_repo"></a>`init_repo`
+
+Data type: `Boolean`
+
+Default enable the initialization of the repository
+
+Default value: ``true``
+
+##### <a name="key"></a>`key`
+
+Data type: `Optional[String]`
+
+Default S3 storage key for an S3 bucket
+
+Default value: ``undef``
+
+##### <a name="password"></a>`password`
+
+Data type: `Optional[String]`
+
+Default encryption password for the Restic repository
+
+Default value: ``undef``
+
+##### <a name="prune"></a>`prune`
+
+Data type: `Boolean`
+
+Default enable `--prune` flag for `restic forget`
+
+Default value: ``false``
+
+##### <a name="restore_flags"></a>`restore_flags`
+
+Data type: `Variant[Array[String[1]],String[1]]`
+
+Default flags for `restic restore <flags>`. See `restic restore --help`
+
+Default value: `[]`
+
+##### <a name="restore_path"></a>`restore_path`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+Default directory used to restore a backup
+
+Default value: ``undef``
+
+##### <a name="restore_pre_cmd"></a>`restore_pre_cmd`
+
+Data type: `Optional[String[1]]`
+
+command to run before execute restore
+Default command to run before `restic restore`
+
+Default value: ``undef``
+
+##### <a name="restore_post_cmd"></a>`restore_post_cmd`
+
+Data type: `Optional[String[1]]`
+
+command to run after execute restore
+Default command to run after `restic restore`
+
+Default value: ``undef``
+
+##### <a name="restore_snapshot"></a>`restore_snapshot`
+
+Data type: `String[1]`
+
+Default Restic snapshot id used by the restore
+
+Default value: `'latest'`
+
+##### <a name="restore_timer"></a>`restore_timer`
+
+Data type: `Optional[String[1]]`
+
+Default systemd timer for restore see: https://wiki.archlinux.de/title/Systemd/Timers
+
+Default value: ``undef``
+
+##### <a name="type"></a>`type`
+
+Data type: `Restic::Repository::Type`
+
+Default name for the Restic repository. Only S3 supported
+
+Default value: `'s3'`
+
+##### <a name="user"></a>`user`
+
+Data type: `String[1]`
+
+Default user for systemd services
+
+Default value: `'root'`
 
 ## Data types
 
