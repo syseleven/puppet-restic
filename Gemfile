@@ -13,19 +13,27 @@ def location_for(place_or_version, fake_version = nil)
   end
 end
 
-ruby_version_segments = Gem::Version.new(RUBY_VERSION.dup).segments
-minor_version = ruby_version_segments[0..1].join('.')
-
 group :development do
-  gem "json", '= 2.0.4',                                         require: false if Gem::Requirement.create('~> 2.4.2').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "json", '= 2.1.0',                                         require: false if Gem::Requirement.create(['>= 2.5.0', '< 2.7.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "json", '= 2.3.0',                                         require: false if Gem::Requirement.create(['>= 2.7.0', '< 2.8.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "puppet-module-posix-default-r#{minor_version}", '~> 1.0', require: false, platforms: [:ruby]
-  gem "puppet-module-posix-dev-r#{minor_version}", '~> 1.0',     require: false, platforms: [:ruby]
+  gem "json", '~> 2.0',                                require: false
+  gem "voxpupuli-puppet-lint-plugins", '~> 3.0',       require: false
+  gem "facterdb", '~> 1.18',                           require: false
+  gem "metadata-json-lint", '>= 2.0.2', '< 4.0.0',     require: false
+  gem "puppetlabs_spec_helper", '>= 3.0.0', '< 5.0.0', require: false
+  gem "rspec-puppet-facts", '~> 2.0',                  require: false
+  gem "codecov", '~> 0.2',                             require: false
+  gem "dependency_checker", '~> 0.2',                  require: false
+  gem "parallel_tests", '~> 3.4',                      require: false
+  gem "pry", '~> 0.10',                                require: false
+  gem "simplecov-console", '~> 0.5',                   require: false
+  gem "puppet-debugger", '~> 1.0',                     require: false
+  gem "rubocop", '= 1.6.1',                            require: false
+  gem "rubocop-performance", '= 1.9.1',                require: false
+  gem "rubocop-rspec", '= 2.0.1',                      require: false
+  gem "rb-readline", '= 0.5.5',                        require: false, platforms: [:mswin, :mingw, :x64_mingw]
 end
-
 group :system_tests do
-  gem "puppet-module-posix-system-r#{minor_version}", '~> 1.0', require: false, platforms: [:ruby]
+  gem "puppet_litmus", '< 1.0.0', require: false, platforms: [:ruby]
+  gem "serverspec", '~> 2.41',    require: false
 end
 
 puppet_version = ENV['PUPPET_GEM_VERSION']
@@ -45,36 +53,6 @@ gems['hiera'] = location_for(hiera_version) if hiera_version
 gems.each do |gem_name, gem_params|
   gem gem_name, *gem_params
 end
-
-gem 'metadata-json-lint'
-gem 'puppet-lint'
-gem 'puppet-lint-absolute_classname-check'
-gem 'puppet-lint-absolute_template_path'
-gem 'puppet-lint-alias-check'
-gem 'puppet-lint-anchor-check'
-gem 'puppet-lint-duplicate_class_parameters-check'
-gem 'puppet-lint-empty_lines_around_body-check'
-gem 'puppet-lint-legacy_facts-check'
-gem 'puppet-lint-manifest_whitespace-check'
-gem 'puppet-lint-no_file_path_attribute-check'
-gem 'puppet-lint-no_symbolic_file_modes-check'
-gem 'puppet-lint-package_ensure-check'
-gem 'puppet-lint-param-docs'
-gem 'puppet-lint-resource_reference_syntax'
-gem 'puppet-lint-strict_indent-check'
-gem 'puppet-lint-top_scope_facts-check'
-gem 'puppet-lint-topscope-variable-check'
-gem 'puppet-lint-trailing_comma-check'
-gem 'puppet-lint-trailing_newline-check'
-gem 'puppet-lint-uncuddled_else-check'
-gem 'puppet-lint-unquoted_string-check'
-gem 'puppet-lint-variable_contains_upcase'
-gem 'puppet-lint-version_comparison-check'
-gem 'puppet-syntax'
-gem 'ra10ke'
-gem 'rubocop'
-gem 'rubocop-performance'
-gem 'rubocop-rspec'
 
 # Evaluate Gemfile.local and ~/.gemfile if they exist
 extra_gemfiles = [
