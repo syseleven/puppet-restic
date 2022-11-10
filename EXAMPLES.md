@@ -109,3 +109,16 @@ You can execute the job manually via:
 ```shell
 systemctl start restic_restore_restore1.service
 ```
+
+## Backup to a 'rest' server
+
+```yaml
+classes:
+  - restic
+
+restic::repositories:
+  full-system:
+    type: 'rest'
+    host: 'http://example-rest-server.example.org'
+    backup_path: '/'
+```
