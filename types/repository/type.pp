@@ -2,5 +2,6 @@
 #
 #
 type Restic::Repository::Type = Enum[
+  'rest',
   's3',
 ]

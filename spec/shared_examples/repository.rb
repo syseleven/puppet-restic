@@ -19,20 +19,29 @@ shared_examples 'repository' do |title, config, params|
   host = values['host']
   bucket = values['bucket']
 
-  repository = "#{type}:#{host}/#{bucket}"
+  repository = bucket ? "#{type}:#{host}/#{bucket}" : "#{type}:#{host}"
   config_file = "/etc/default/restic_#{title}"
+  type_config = case values['type']
+                when 's3'
+                  {
+                    'AWS_ACCESS_KEY_ID' => values['id'],
+                    'AWS_SECRET_ACCESS_KEY' => values['key'],
+                    'RESTIC_PASSWORD' => values['password'],
+                    'RESTIC_REPOSITORY' => repository,
+                  }
+                else
+                  {
+                    'RESTIC_PASSWORD' => values['password'],
+                    'RESTIC_REPOSITORY' => repository,
+                  }
+                end
 
   if values['init_repo']
     it {
       is_expected.to contain_exec("restic_init_#{repository}_#{title}").only_with(
         {
           'command' => "#{values['binary']} init",
-          'environment' => [
-            "AWS_ACCESS_KEY_ID=#{values['id']}",
-            "AWS_SECRET_ACCESS_KEY=#{values['key']}",
-            "RESTIC_PASSWORD=#{values['password']}",
-            "RESTIC_REPOSITORY=#{repository}",
-          ],
+          'environment' => type_config.reduce([]) { |memo, (key, value)| memo << "#{key}=#{value}" }.sort,
           'onlyif' => "#{values['binary']} snapshots 2>&1 | grep -q 'Is there a repository at the following location'",
         },
       )
@@ -58,12 +67,8 @@ shared_examples 'repository' do |title, config, params|
     }
 
     config_keys = {
-      'AWS_ACCESS_KEY_ID'     => values['id'],
-      'AWS_SECRET_ACCESS_KEY' => values['key'],
-      'GLOBAL_FLAGS'          => [ values['global_flags'] ].flatten.join(' '),
-      'RESTIC_PASSWORD'       => values['password'],
-      'RESTIC_REPOSITORY'     => repository,
-    }
+      'GLOBAL_FLAGS' => [ values['global_flags'] ].flatten.join(' '),
+    }.merge(type_config).merge(type_config)
 
     config_keys.each do |key, data|
       it {

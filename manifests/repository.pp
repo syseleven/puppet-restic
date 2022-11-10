@@ -147,9 +147,9 @@ define restic::repository (
   $_global_flags     = pick($global_flags, $restic::global_flags)
   $_group            = pick($group, $restic::group)
   $_host             = pick($host, $restic::host)
-  $_id               = pick($id, $restic::id)
+  $_id               = $id.lest || { $restic::id }
   $_init_repo        = pick($init_repo, $restic::init_repo)
-  $_key              = pick($key, $restic::key)
+  $_key              = $key.lest || { $restic::key }
   $_password         = pick($password, $restic::password)
   $_prune            = pick($prune, $restic::prune)
   $_restore_flags    = pick($restore_flags, $restic::restore_flags)
@@ -169,18 +169,29 @@ define restic::repository (
     fail("restic::repository[${title}]: You have to set \$restore_path if you enable the restore!")
   }
 
-  $repository  = "${_type}:${_host}/${_bucket}"
-  $config_file = "/etc/default/restic_${title}"
+  $repository    = $_bucket ? {
+    undef   => "${_type}:${_host}",
+    default => "${_type}:${_host}/${_bucket}",
+  }
+
+  $config_file   = "/etc/default/restic_${title}"
+  $type_config   = $_type ? {
+    's3'    => {
+      'AWS_ACCESS_KEY_ID'     => $_id,
+      'AWS_SECRET_ACCESS_KEY' => $_key,
+      'RESTIC_PASSWORD'       => $_password,
+      'RESTIC_REPOSITORY'     => $repository,
+    },
+    default => {
+      'RESTIC_PASSWORD'   => $_password,
+      'RESTIC_REPOSITORY' => $repository,
+    },
+  }
 
   if $_init_repo {
     exec { "restic_init_${repository}_${title}":
       command     => "${_binary} init",
-      environment => [
-        "AWS_ACCESS_KEY_ID=${_id}",
-        "AWS_SECRET_ACCESS_KEY=${_key}",
-        "RESTIC_PASSWORD=${_password}",
-        "RESTIC_REPOSITORY=${repository}",
-      ],
+      environment => $type_config.reduce([]) |$memo,$item| { $memo + "${item[0]}=${item[1]}" }.sort,
       onlyif      => "${_binary} snapshots 2>&1 | grep -q 'Is there a repository at the following location'",
     }
   }
@@ -196,12 +207,8 @@ define restic::repository (
     }
 
     $config_keys = {
-      'AWS_ACCESS_KEY_ID'     => $_id,
-      'AWS_SECRET_ACCESS_KEY' => $_key,
-      'GLOBAL_FLAGS'          => [ $_global_flags, ].flatten.join(' '),
-      'RESTIC_PASSWORD'       => $_password,
-      'RESTIC_REPOSITORY'     => $repository,
-    }
+      'GLOBAL_FLAGS' => [ $_global_flags, ].flatten.join(' '),
+    } + $type_config
 
     $config_keys.each |$config,$data| {
       concat::fragment { "restic_fragment_${title}_${config}":

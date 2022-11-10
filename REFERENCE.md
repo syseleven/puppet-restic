@@ -726,6 +726,6 @@ All valid repository types
 Alias of
 
 ```puppet
-Enum['s3']
+Enum['rest', 's3']
 ```
 

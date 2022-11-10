@@ -97,4 +97,15 @@ TESTS = {
       }
     }
   },
+  'backup with type rest' => {
+    'repositories' => {
+      'backup1' => {
+        'type' => 'rest',
+        'backup_path' => '/home/backup',
+        'bucket' => 'some_bucket_value',
+        'host' => 'https://rest-backup-server',
+        'password' => 'some_password_value',
+      }
+    }
+  }
 }.freeze
