@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.2.4
+
+**Features**
+- Allow inclusion of restic::repository from Matthias Baur <m.baur@syseleven.de>
+- Support 'rest' repository type from Matthias Baur <m.baur@syseleven.de>
+
 ## Release 2.2.3
 
 **Features**
