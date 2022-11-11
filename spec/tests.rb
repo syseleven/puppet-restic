@@ -1,3 +1,23 @@
+cmd_tests = {}
+[ 'backup_pre_cmd', 'backup_post_cmd', 'forget_pre_cmd', 'forget_post_cmd', 'restore_pre_cmd', 'restore_post_cmd', ].each do |cmd|
+  cmd_tests.merge!({
+    "#{cmd} string" => {
+        'type' => 'rest',
+        'backup_path' => '/home/backup',
+        'host' => 'https://rest-backup-server',
+        'password' => 'some_password_value',
+        cmd => 'somecommand',
+    },
+    "#{cmd} array" => {
+        'type' => 'rest',
+        'backup_path' => '/home/backup',
+        'host' => 'https://rest-backup-server',
+        'password' => 'some_password_value',
+        cmd => ['some_command_1', 'some_command_2'],
+    },
+  })
+end
+
 TESTS = {
   'default values' => {
     'package_manage' => true,
@@ -108,4 +128,4 @@ TESTS = {
       }
     }
   }
-}.freeze
+}.merge(cmd_tests).freeze
