@@ -128,7 +128,7 @@ Default value: ``undef``
 
 ##### <a name="backup_pre_cmd"></a>`backup_pre_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default command to run before `restic backup`
 
@@ -136,7 +136,7 @@ Default value: ``undef``
 
 ##### <a name="backup_post_cmd"></a>`backup_post_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default command to run after `restic backup`
 
@@ -208,7 +208,7 @@ Default value: `[]`
 
 ##### <a name="forget_pre_cmd"></a>`forget_pre_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default command to run before `restic forget`
 
@@ -216,7 +216,7 @@ Default value: ``undef``
 
 ##### <a name="forget_post_cmd"></a>`forget_post_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default command to run after `restic forget`
 
@@ -312,7 +312,7 @@ Default value: ``undef``
 
 ##### <a name="restore_pre_cmd"></a>`restore_pre_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 command to run before execute restore
 Default command to run before `restic restore`
@@ -321,7 +321,7 @@ Default value: ``undef``
 
 ##### <a name="restore_post_cmd"></a>`restore_post_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 command to run after execute restore
 Default command to run after `restic restore`
@@ -404,11 +404,11 @@ The following parameters are available in the `restic::repository` defined type:
 
 ##### <a name="backup_flags"></a>`backup_flags`
 
-Data type: `Variant[Array[String[1]],String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default flags for `restic backup <flags>`. See `restic backup --help`
 
-Default value: `[]`
+Default value: ``undef``
 
 ##### <a name="backup_path"></a>`backup_path`
 
@@ -420,7 +420,7 @@ Default value: ``undef``
 
 ##### <a name="backup_pre_cmd"></a>`backup_pre_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default command to run before `restic backup`
 
@@ -428,7 +428,7 @@ Default value: ``undef``
 
 ##### <a name="backup_post_cmd"></a>`backup_post_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default command to run after `restic backup`
 
@@ -444,11 +444,11 @@ Default value: ``undef``
 
 ##### <a name="binary"></a>`binary`
 
-Data type: `Stdlib::Absolutepath`
+Data type: `Optional[Stdlib::Absolutepath]`
 
 Default path to the Restic binary
 
-Default value: `'/usr/bin/restic'`
+Default value: ``undef``
 
 ##### <a name="bucket"></a>`bucket`
 
@@ -460,47 +460,47 @@ Default value: ``undef``
 
 ##### <a name="enable_backup"></a>`enable_backup`
 
-Data type: `Boolean`
+Data type: `Optional[Boolean]`
 
 Default enable the backup service
 
-Default value: ``true``
+Default value: ``undef``
 
 ##### <a name="enable_forget"></a>`enable_forget`
 
-Data type: `Boolean`
+Data type: `Optional[Boolean]`
 
 Default enable the forget service
 
-Default value: ``false``
+Default value: ``undef``
 
 ##### <a name="enable_restore"></a>`enable_restore`
 
-Data type: `Boolean`
+Data type: `Optional[Boolean]`
 
 Default enable the restore service
 
-Default value: ``false``
+Default value: ``undef``
 
 ##### <a name="forget"></a>`forget`
 
-Data type: `Restic::Forget`
+Data type: `Optional[Restic::Forget]`
 
 Default hash with `keep-*` => `value` to configure forget flags
 
-Default value: `{}`
+Default value: ``undef``
 
 ##### <a name="forget_flags"></a>`forget_flags`
 
-Data type: `Variant[Array[String[1]],String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default flags for `restic forget <flags>`. See `restic forget --help`
 
-Default value: `[]`
+Default value: ``undef``
 
 ##### <a name="forget_pre_cmd"></a>`forget_pre_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default command to run before `restic forget`
 
@@ -508,7 +508,7 @@ Default value: ``undef``
 
 ##### <a name="forget_post_cmd"></a>`forget_post_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default command to run after `restic forget`
 
@@ -524,19 +524,19 @@ Default value: ``undef``
 
 ##### <a name="global_flags"></a>`global_flags`
 
-Data type: `Variant[Array[String[1]],String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default global flags for `restic <flags>`. See `restic --help`
 
-Default value: `[]`
+Default value: ``undef``
 
 ##### <a name="group"></a>`group`
 
-Data type: `String`
+Data type: `Optional[String]`
 
 Default group for systemd services
 
-Default value: `'root'`
+Default value: ``undef``
 
 ##### <a name="host"></a>`host`
 
@@ -556,11 +556,11 @@ Default value: ``undef``
 
 ##### <a name="init_repo"></a>`init_repo`
 
-Data type: `Boolean`
+Data type: `Optional[Boolean]`
 
 Default enable the initialization of the repository
 
-Default value: ``true``
+Default value: ``undef``
 
 ##### <a name="key"></a>`key`
 
@@ -580,19 +580,19 @@ Default value: ``undef``
 
 ##### <a name="prune"></a>`prune`
 
-Data type: `Boolean`
+Data type: `Optional[Boolean]`
 
 Default enable `--prune` flag for `restic forget`
 
-Default value: ``false``
+Default value: ``undef``
 
 ##### <a name="restore_flags"></a>`restore_flags`
 
-Data type: `Variant[Array[String[1]],String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 Default flags for `restic restore <flags>`. See `restic restore --help`
 
-Default value: `[]`
+Default value: ``undef``
 
 ##### <a name="restore_path"></a>`restore_path`
 
@@ -604,7 +604,7 @@ Default value: ``undef``
 
 ##### <a name="restore_pre_cmd"></a>`restore_pre_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 command to run before execute restore
 Default command to run before `restic restore`
@@ -613,7 +613,7 @@ Default value: ``undef``
 
 ##### <a name="restore_post_cmd"></a>`restore_post_cmd`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[Array[String[1]],String[1]]]`
 
 command to run after execute restore
 Default command to run after `restic restore`
@@ -622,11 +622,11 @@ Default value: ``undef``
 
 ##### <a name="restore_snapshot"></a>`restore_snapshot`
 
-Data type: `String[1]`
+Data type: `Optional[String[1]]`
 
 Default Restic snapshot id used by the restore
 
-Default value: `'latest'`
+Default value: ``undef``
 
 ##### <a name="restore_timer"></a>`restore_timer`
 
@@ -638,19 +638,19 @@ Default value: ``undef``
 
 ##### <a name="type"></a>`type`
 
-Data type: `Restic::Repository::Type`
+Data type: `Optional[Restic::Repository::Type]`
 
 Default name for the Restic repository. Only S3 supported
 
-Default value: `'s3'`
+Default value: ``undef``
 
 ##### <a name="user"></a>`user`
 
-Data type: `String[1]`
+Data type: `Optional[String[1]]`
 
 Default user for systemd services
 
-Default value: `'root'`
+Default value: ``undef``
 
 ## Data types
 

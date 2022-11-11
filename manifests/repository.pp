@@ -97,8 +97,8 @@
 define restic::repository (
   Optional[Variant[Array[String[1]],String[1]]] $backup_flags     = undef,
   Optional[Restic::Path]                        $backup_path      = undef,
-  Optional[String[1]]                           $backup_pre_cmd   = undef,
-  Optional[String[1]]                           $backup_post_cmd  = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $backup_pre_cmd   = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $backup_post_cmd  = undef,
   Optional[String[1]]                           $backup_timer     = undef,
   Optional[Stdlib::Absolutepath]                $binary           = undef,
   Optional[String]                              $bucket           = undef,
@@ -107,8 +107,8 @@ define restic::repository (
   Optional[Boolean]                             $enable_restore   = undef,
   Optional[Restic::Forget]                      $forget           = undef,
   Optional[Variant[Array[String[1]],String[1]]] $forget_flags     = undef,
-  Optional[String[1]]                           $forget_pre_cmd   = undef,
-  Optional[String[1]]                           $forget_post_cmd  = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $forget_pre_cmd   = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd  = undef,
   Optional[String[1]]                           $forget_timer     = undef,
   Optional[Variant[Array[String[1]],String[1]]] $global_flags     = undef,
   Optional[String]                              $group            = undef,
@@ -120,8 +120,8 @@ define restic::repository (
   Optional[Boolean]                             $prune            = undef,
   Optional[Variant[Array[String[1]],String[1]]] $restore_flags    = undef,
   Optional[Stdlib::Absolutepath]                $restore_path     = undef,
-  Optional[String[1]]                           $restore_pre_cmd  = undef,
-  Optional[String[1]]                           $restore_post_cmd = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd  = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $restore_post_cmd = undef,
   Optional[String[1]]                           $restore_snapshot = undef,
   Optional[String[1]]                           $restore_timer    = undef,
   Optional[Restic::Repository::Type]            $type             = undef,
@@ -229,7 +229,7 @@ define restic::repository (
     $_backup_pre_cmd,
     "${_binary} backup \$GLOBAL_FLAGS \$BACKUP_FLAGS",
     $_backup_post_cmd,
-  ].delete_undef_values
+  ].flatten.delete_undef_values
 
   $backup_keys = {
     'BACKUP_FLAGS' => [ $_backup_flags, $_backup_path, ].flatten.join(' '),
@@ -252,7 +252,7 @@ define restic::repository (
     $_forget_pre_cmd,
     "${_binary} forget \$GLOBAL_FLAGS \$FORGET_FLAGS",
     $_forget_post_cmd,
-  ]
+  ].flatten.delete_undef_values
 
   $forgets       = $_forget.map |$k,$v| { "--${k} ${v}" }
   $forget_prune  = if $_prune { '--prune' } else { undef }
@@ -277,7 +277,7 @@ define restic::repository (
     $_restore_pre_cmd,
     "${_binary} restore \$GLOBAL_FLAGS \$RESTORE_FLAGS",
     $_restore_post_cmd,
-  ]
+  ].flatten.delete_undef_values
 
   $restore_keys = {
     'RESTORE_FLAGS' => [ "-t ${_restore_path}", $_restore_flags, $_restore_snapshot, ].flatten.join(' '),
