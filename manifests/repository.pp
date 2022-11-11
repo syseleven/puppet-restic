@@ -135,7 +135,7 @@ define restic::repository (
   $_backup_post_cmd  = $backup_post_cmd.lest || { $restic::backup_post_cmd }
   $_backup_timer     = $backup_timer.lest || { $restic::backup_timer }
   $_binary           = pick($binary, $restic::binary)
-  $_bucket           = pick($bucket, $restic::bucket)
+  $_bucket           = $bucket.lest || { $restic::bucket }
   $_enable_backup    = pick($enable_backup, $restic::enable_backup)
   $_enable_forget    = pick($enable_forget, $restic::enable_forget)
   $_enable_restore   = pick($enable_restore, $restic::enable_restore)
