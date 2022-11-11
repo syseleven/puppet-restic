@@ -19,7 +19,7 @@ shared_examples 'repository' do |title, config, params|
   host = values['host']
   bucket = values['bucket']
 
-  repository = bucket ? "#{type}:#{host}/#{bucket}" : "#{type}:#{host}"
+  repository = bucket == :undef ? "#{type}:#{host}" : "#{type}:#{host}/#{bucket}"
   config_file = "/etc/default/restic_#{title}"
   type_config = case values['type']
                 when 's3'
