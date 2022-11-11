@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.3.0
+
+**Features**
+- Bucket can be empty for non s3 repositories from Matthias Baur <m.baur@syseleven.de>
+- Allow *_cmd parameters to be an Array from Matthias Baur <m.baur@syseleven.de>
+
 ## Release 2.2.4
 
 **Features**
