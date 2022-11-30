@@ -10,6 +10,15 @@
 # @param package_name
 #   Name for Restic package
 #
+# @param package_version
+#   Restic version when installing with the `url` method.
+#
+# @param checksum
+#   Checksum of the Restic archive. Only applicable when using `install_method = 'url'`.
+#
+# @param install_method
+#   Install method to use.
+#
 # @param repositories
 #   Hash of repositoriries
 #
@@ -113,6 +122,9 @@ class restic (
   String                              $package_ensure   = 'present',
   Boolean                             $package_manage   = true,
   String                              $package_name     = 'restic',
+  Optional[String[1]]                 $package_version  = undef,
+  Optional[String[1]]                 $checksum         = undef,
+  Enum['package', 'url']              $install_method   = 'package',
 
   ##
   ## backups/forgets/restores
