@@ -12,3 +12,6 @@ fixtures:
     stdlib:
       repo: 'puppetlabs/stdlib'
       ref: '8.2.0'
+    archive:
+      repo: 'puppet/archive'
+      ref: '6.1.0'

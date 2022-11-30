@@ -25,6 +25,15 @@ TESTS = {
   'not managing package' => {
     'package_manage' => false,
   },
+  'install from url with package_version provided' => {
+    'install_method' => 'url',
+    'package_version' => '0.14.0',
+  },
+  'install from url with package_version and checksum provided' => {
+    'install_method' => 'url',
+    'package_version' => '0.14.0',
+    'checksum' => 'c8da7350dc334cd5eaf13b2c9d6e689d51e7377ba1784cc6d65977bd44ee1165',
+  },
   'one repo and init' => {
     'repositories' => {
       'initonly' => {
