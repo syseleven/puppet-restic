@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.4.0
+
+**Features**
+- Allow the installation of restic through url download from Matthias Baur <m.baur@syseleven.de>
+
 ## Release 2.3.0
 
 **Features**
