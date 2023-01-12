@@ -1,5 +1,4 @@
 <%- |
-    $commands,
     $config,
     $group,
     $user,
@@ -9,6 +8,3 @@ User=<%= $user %>
 Group=<%= $group %>
 Type=oneshot
 EnvironmentFile=<%= $config %>
-<% $commands.each |$command| { -%>
-ExecStart=<%= $command %>
-<% } -%>
