@@ -36,28 +36,50 @@ shared_examples 'service' do |title, commands, config, configs, enable, group, u
     ensure_value = 'absent'
   end
 
-  service_content = [
-    '[Service]',
-    "User=#{user}",
-    "Group=#{group}",
-    'Type=oneshot',
-    "EnvironmentFile=#{config}",
-  ]
+  it {
+    is_expected.to contain_concat("/lib/systemd/system/#{title}.service").with(
+      {
+        'ensure'         => ensure_value,
+        'ensure_newline' => true,
+        'owner'          => 'root',
+        'group'          => 'root',
+        'mode'           => '0444',
+        'show_diff'      => true,
+      },
+    )
+  }
+
+  it {
+    is_expected.to contain_concat__fragment("/lib/systemd/system/#{title}.service-base").with(
+      {
+        'target'  => "/lib/systemd/system/#{title}.service",
+        'content' => <<~HEREDOC
+                     [Service]
+                     User=#{user}
+                     Group=#{group}
+                     Type=oneshot
+                     EnvironmentFile=#{config}
+                     HEREDOC
+      },
+    )
+  }
 
   commands.delete(:undef)
   commands.delete(nil)
-
-  commands.each do |command|
-    service_content << "ExecStart=#{command}"
-  end
-
-  service_content << ''
+  it {
+    is_expected.to contain_concat__fragment("/lib/systemd/system/#{title}.service-commands").with(
+      {
+        'target'  => "/lib/systemd/system/#{title}.service",
+        'content' => commands.map {|command| "ExecStart=#{command}"}.push('').join("\n")
+      },
+    )
+  }
 
   it {
     is_expected.to contain_systemd__unit_file("#{title}.service").with(
       {
         'ensure'    => ensure_value,
-        'content'   => service_content.join("\n"),
+        'target'    => "/lib/systemd/system/#{title}.service",
         'group'     => 'root',
         'mode'      => '0440',
         'owner'     => 'root',
