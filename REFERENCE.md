@@ -20,6 +20,8 @@
 #### Public Defined types
 
 * [`restic::repository`](#resticrepository): Configure a Restic service to backup/forget/restore data.
+* [`restic::repository::post_command`](#resticrepositorypost_command): Define command(s) to be run after a restic command
+* [`restic::repository::pre_command`](#resticrepositorypre_command): Define command(s) to be run before a restic command
 
 #### Private Defined types
 
@@ -45,6 +47,9 @@ The following parameters are available in the `restic` class:
 * [`package_ensure`](#package_ensure)
 * [`package_manage`](#package_manage)
 * [`package_name`](#package_name)
+* [`package_version`](#package_version)
+* [`checksum`](#checksum)
+* [`install_method`](#install_method)
 * [`repositories`](#repositories)
 * [`backup_flags`](#backup_flags)
 * [`backup_path`](#backup_path)
@@ -101,6 +106,30 @@ Data type: `String`
 Name for Restic package
 
 Default value: `'restic'`
+
+##### <a name="package_version"></a>`package_version`
+
+Data type: `Optional[String[1]]`
+
+Restic version when installing with the `url` method.
+
+Default value: ``undef``
+
+##### <a name="checksum"></a>`checksum`
+
+Data type: `Optional[String[1]]`
+
+Checksum of the Restic archive. Only applicable when using `install_method = 'url'`.
+
+Default value: ``undef``
+
+##### <a name="install_method"></a>`install_method`
+
+Data type: `Enum['package', 'url']`
+
+Install method to use.
+
+Default value: `'package'`
 
 ##### <a name="repositories"></a>`repositories`
 
@@ -651,6 +680,130 @@ Data type: `Optional[String[1]]`
 Default user for systemd services
 
 Default value: ``undef``
+
+### <a name="resticrepositorypost_command"></a>`restic::repository::post_command`
+
+Define command(s) to be run after a restic command
+
+#### Examples
+
+##### Define a command to be run after the backup
+
+```puppet
+restic::repository::pre_command { 'mysql':
+  command => 'rm -rf /opt/xtrabackup',
+}
+```
+
+#### Parameters
+
+The following parameters are available in the `restic::repository::post_command` defined type:
+
+* [`command`](#command)
+* [`repository_title`](#repository_title)
+* [`restic_command`](#restic_command)
+* [`allow_fail`](#allow_fail)
+* [`order`](#order)
+
+##### <a name="command"></a>`command`
+
+Data type: `Variant[Array[String[1]],String[1]]`
+
+Command to run.
+
+##### <a name="repository_title"></a>`repository_title`
+
+Data type: `String[1]`
+
+restic::repository title where this command should be add to.
+
+Default value: `$title`
+
+##### <a name="restic_command"></a>`restic_command`
+
+Data type: `Enum['backup', 'forget', 'restore']`
+
+After which restic command this command should be run.
+
+Default value: `'backup'`
+
+##### <a name="allow_fail"></a>`allow_fail`
+
+Data type: `Boolean`
+
+If an error of this commands should be allowed.
+
+Default value: ``false``
+
+##### <a name="order"></a>`order`
+
+Data type: `Integer[26]`
+
+Order of Commands. Helpful if you have multiple.
+
+Default value: `26`
+
+### <a name="resticrepositorypre_command"></a>`restic::repository::pre_command`
+
+Define command(s) to be run before a restic command
+
+#### Examples
+
+##### Define a command to be run before the backup
+
+```puppet
+restic::repository::pre_command { 'mysql':
+  command => 'xtrabackup --backup --target-dir=/opt/xtrabackup',
+}
+```
+
+#### Parameters
+
+The following parameters are available in the `restic::repository::pre_command` defined type:
+
+* [`command`](#command)
+* [`repository_title`](#repository_title)
+* [`restic_command`](#restic_command)
+* [`allow_fail`](#allow_fail)
+* [`order`](#order)
+
+##### <a name="command"></a>`command`
+
+Data type: `Variant[Array[String[1]],String[1]]`
+
+Command to run.
+
+##### <a name="repository_title"></a>`repository_title`
+
+Data type: `String[1]`
+
+restic::repository title where this command should be add to.
+
+Default value: `$title`
+
+##### <a name="restic_command"></a>`restic_command`
+
+Data type: `Enum['backup', 'forget', 'restore']`
+
+Before which restic command this command should be run.
+
+Default value: `'backup'`
+
+##### <a name="allow_fail"></a>`allow_fail`
+
+Data type: `Boolean`
+
+If an error of this commands should be allowed.
+
+Default value: ``false``
+
+##### <a name="order"></a>`order`
+
+Data type: `Integer[11,24]`
+
+Order of Commands. Helpful if you have multiple.
+
+Default value: `11`
 
 ## Data types
 
