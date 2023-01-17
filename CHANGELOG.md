@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.5.0
+
+**Features**
+- Add pre/post command defined for service from Matthias Baur <m.baur@syseleven.de>
+
 ## Release 2.4.0
 
 **Features**
