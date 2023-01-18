@@ -31,7 +31,10 @@ class restic::package (
         default => 'sha256',
       }
 
-      archive { "restic-${package_version}.bz2":
+      package { 'bzip2':
+        ensure => present,
+      }
+      -> archive { "restic-${package_version}.bz2":
         path            => "/tmp/restic-${package_version}.bz2",
         source          => "https://github.com/restic/restic/releases/download/v${package_version}/restic_${package_version}_linux_amd64.bz2",
         checksum        => $checksum,
