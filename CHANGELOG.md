@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.5.1
+
+**Bugfixes**
+- Ensure bunzip is installed from Matthias Baur <m.baur@syseleven.de>
+
 ## Release 2.5.0
 
 **Features**
