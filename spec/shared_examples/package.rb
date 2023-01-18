@@ -24,6 +24,8 @@ shared_examples 'package' do |params = {}|
       }
     end
   elsif values['install_method'] == 'url'
+    it { is_expected.to contain_package('bzip2') }
+
     it { is_expected.to contain_archive("restic-#{values['package_version']}.bz2").with(source: "https://github.com/restic/restic/releases/download/v#{values['package_version']}/restic_#{values['package_version']}_linux_amd64.bz2") }
 
     it { is_expected.to contain_file("/usr/local/bin/restic-#{values['package_version']}").with(ensure: 'file', mode: '0555', owner: 'root', group: 'root') }
