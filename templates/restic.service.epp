@@ -2,9 +2,13 @@
     $config,
     $group,
     $user,
+    $success_exit_status = undef,
 | -%>
 [Service]
 User=<%= $user %>
 Group=<%= $group %>
 Type=oneshot
 EnvironmentFile=<%= $config %>
+<% if $success_exit_status { -%>
+SuccessExitStatus=<%= $success_exit_status %>
+<% } -%>
