@@ -19,6 +19,7 @@ shared_examples 'repository' do |title, config, params|
   host = values['host']
   bucket = values['bucket']
 
+  success_exit_status = values['backup_exit3_success'] ? 3 : :undef
   repository = bucket == :undef ? "#{type}:#{host}" : "#{type}:#{host}/#{bucket}"
   config_file = "/etc/default/restic_#{title}"
   type_config = case values['type']
@@ -106,7 +107,7 @@ shared_examples 'repository' do |title, config, params|
     'BACKUP_FLAGS' => backup_config.join(' '),
   }
 
-  include_examples 'service', "restic_backup_#{title}", backup_commands, config_file, backup_keys, values['enable_backup'], values['group'], values['user'], values['backup_timer']
+  include_examples 'service', "restic_backup_#{title}", backup_commands, config_file, backup_keys, values['enable_backup'], values['group'], values['user'], values['backup_timer'], success_exit_status
 
   ##
   ## forget service

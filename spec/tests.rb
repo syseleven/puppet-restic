@@ -135,5 +135,18 @@ TESTS = {
         'password' => 'some_password_value',
       }
     }
-  }
+  },
+  'backup with backup_exit3_success => true' => {
+    'repositories' => {
+      'backup1' => {
+        'backup_path' => '/home/backup',
+        'bucket' => 'some_bucket_value',
+        'host' => 'some_host_value',
+        'id' => 'some_id_value',
+        'key' => 'some_key_value',
+        'password' => 'some_password_value',
+        'backup_exit3_success' => true,
+      }
+    }
+  },
 }.merge(cmd_tests).freeze

@@ -11,6 +11,7 @@ define restic::service (
   $group,
   $user,
   $timer,
+  $success_exit_status = undef,
 ) {
   assert_private()
 
@@ -41,7 +42,7 @@ define restic::service (
   }
 
   concat::fragment { "/lib/systemd/system/${title}.service-base":
-    content => epp("${module_name}/restic.service.epp", { config => $config, group => $group, user => $user, }),
+    content => epp("${module_name}/restic.service.epp", { config => $config, group => $group, user => $user, success_exit_status => $success_exit_status }),
     target  => "/lib/systemd/system/${title}.service",
   }
 

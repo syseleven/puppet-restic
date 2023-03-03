@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_examples 'service' do |title, commands, config, configs, enable, group, user, timer = :undef|
+shared_examples 'service' do |title, commands, config, configs, enable, group, user, timer = :undef, success_exit_status = :undef|
   it {
     is_expected.to contain_restic__service(title).with(
       {
@@ -49,17 +49,30 @@ shared_examples 'service' do |title, commands, config, configs, enable, group, u
     )
   }
 
-  it {
-    is_expected.to contain_concat__fragment("/lib/systemd/system/#{title}.service-base").with(
-      {
-        'target'  => "/lib/systemd/system/#{title}.service",
-        'content' => <<~HEREDOC
+  if success_exit_status == :undef
+    fragment_content = <<~HEREDOC
                      [Service]
                      User=#{user}
                      Group=#{group}
                      Type=oneshot
                      EnvironmentFile=#{config}
                      HEREDOC
+  else
+    fragment_content = <<~HEREDOC
+                     [Service]
+                     User=#{user}
+                     Group=#{group}
+                     Type=oneshot
+                     EnvironmentFile=#{config}
+                     SuccessExitStatus=3
+                     HEREDOC
+  end
+
+  it {
+    is_expected.to contain_concat__fragment("/lib/systemd/system/#{title}.service-base").with(
+      {
+        'target'  => "/lib/systemd/system/#{title}.service",
+        'content' => fragment_content
       },
     )
   }
