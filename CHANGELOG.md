@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.5.2
+- Make systemd SuccessExitStatus configruable from Matthias Baur <m.baur@syseleven.de>
+
+  This makes it possible to accept Restic exit code 3 to be accepted as a
+  success by systemd.
+
+  See https://restic.readthedocs.io/en/latest/040_backup.html#exit-status-codes
+
+**Bugfixes**
+- Ensure bunzip is installed from Matthias Baur <m.baur@syseleven.de>
+
 ## Release 2.5.1
 
 **Bugfixes**
