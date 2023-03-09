@@ -116,11 +116,11 @@ define restic::repository (
   Optional[String[1]]                           $forget_timer         = undef,
   Optional[Variant[Array[String[1]],String[1]]] $global_flags         = undef,
   Optional[String]                              $group                = undef,
-  Optional[String]                              $host                 = undef,
-  Optional[String]                              $id                   = undef,
+  Optional[Variant[Sensitive[String],String]]   $host                 = undef,
+  Optional[Variant[Sensitive[String],String]]   $id                   = undef,
   Optional[Boolean]                             $init_repo            = undef,
-  Optional[String]                              $key                  = undef,
-  Optional[String]                              $password             = undef,
+  Optional[Variant[Sensitive[String],String]]   $key                  = undef,
+  Optional[Variant[Sensitive[String],String]]   $password             = undef,
   Optional[Boolean]                             $prune                = undef,
   Optional[Variant[Array[String[1]],String[1]]] $restore_flags        = undef,
   Optional[Stdlib::Absolutepath]                $restore_path         = undef,
@@ -180,8 +180,8 @@ define restic::repository (
   }
 
   $repository    = $_bucket ? {
-    undef   => "${_type}:${_host}",
-    default => "${_type}:${_host}/${_bucket}",
+    undef   => "${_type}:${_host.unwrap}",
+    default => "${_type}:${_host.unwrap}/${_bucket}",
   }
 
   $config_file   = "/etc/default/restic_${title}"
@@ -199,8 +199,10 @@ define restic::repository (
   }
 
   if $_init_repo {
-    exec { "restic_init_${repository}_${title}":
+    exec { "restic_init_${title}":
       command     => "${_binary} init",
+      # TODO: Make environment a Sensitive data type as well. But this is currently not supported by Puppet
+      # https://github.com/puppetlabs/puppet/blob/f4781e349d0089061d05f1e8e6e3c3d44a7e1e04/lib/puppet/type/exec.rb#L692
       environment => $type_config.reduce([]) |$memo,$item| { $memo + "${item[0]}=${item[1]}" }.sort,
       onlyif      => "${_binary} snapshots 2>&1 | grep -q 'Is there a repository at the following location'",
     }
@@ -222,7 +224,7 @@ define restic::repository (
 
     $config_keys.each |$config,$data| {
       concat::fragment { "restic_fragment_${title}_${config}":
-        content => "${config}='${data}'",
+        content => Sensitive("${config}='${data.unwrap}'"), # unwarp, becase concating Sensitive strings doesn't work.
         target  => $config_file,
       }
     }

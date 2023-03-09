@@ -39,7 +39,7 @@ shared_examples 'repository' do |title, config, params|
 
   if values['init_repo']
     it {
-      is_expected.to contain_exec("restic_init_#{repository}_#{title}").only_with(
+      is_expected.to contain_exec("restic_init_#{title}").only_with(
         {
           'command' => "#{values['binary']} init",
           'environment' => type_config.reduce([]) { |memo, (key, value)| memo << "#{key}=#{value}" }.sort,
@@ -49,7 +49,7 @@ shared_examples 'repository' do |title, config, params|
     }
   else
     it {
-      is_expected.not_to contain_exec("restic_init_#{repository}")
+      is_expected.not_to contain_exec("restic_init_#{title}")
     }
   end
 
@@ -75,7 +75,7 @@ shared_examples 'repository' do |title, config, params|
       it {
         is_expected.to contain_concat__fragment("restic_fragment_#{title}_#{key}").with(
           {
-            'content' => "#{key}='#{data}'",
+            'content' => sensitive("#{key}='#{data}'"),
             'target'  => config_file,
           },
         )
