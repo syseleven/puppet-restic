@@ -286,7 +286,7 @@ Default value: `'root'`
 
 ##### <a name="-restic--host"></a>`host`
 
-Data type: `Optional[String]`
+Data type: `Optional[Variant[Sensitive[String],String]]`
 
 Default hostname for the Restic repository
 
@@ -294,7 +294,7 @@ Default value: `undef`
 
 ##### <a name="-restic--id"></a>`id`
 
-Data type: `Optional[String]`
+Data type: `Optional[Variant[Sensitive[String],String]]`
 
 Default S3 storage id for an S3 bucket
 
@@ -310,7 +310,7 @@ Default value: `true`
 
 ##### <a name="-restic--key"></a>`key`
 
-Data type: `Optional[String]`
+Data type: `Optional[Variant[Sensitive[String],String]]`
 
 Default S3 storage key for an S3 bucket
 
@@ -318,7 +318,7 @@ Default value: `undef`
 
 ##### <a name="-restic--password"></a>`password`
 
-Data type: `Optional[String]`
+Data type: `Optional[Variant[Sensitive[String],String]]`
 
 Default encryption password for the Restic repository
 
@@ -587,7 +587,7 @@ Default value: `undef`
 
 ##### <a name="-restic--repository--host"></a>`host`
 
-Data type: `Optional[String]`
+Data type: `Optional[Variant[Sensitive[String],String]]`
 
 Default hostname for the Restic repository
 
@@ -595,7 +595,7 @@ Default value: `undef`
 
 ##### <a name="-restic--repository--id"></a>`id`
 
-Data type: `Optional[String]`
+Data type: `Optional[Variant[Sensitive[String],String]]`
 
 Default S3 storage id for an S3 bucket
 
@@ -611,7 +611,7 @@ Default value: `undef`
 
 ##### <a name="-restic--repository--key"></a>`key`
 
-Data type: `Optional[String]`
+Data type: `Optional[Variant[Sensitive[String],String]]`
 
 Default S3 storage key for an S3 bucket
 
@@ -619,7 +619,7 @@ Default value: `undef`
 
 ##### <a name="-restic--repository--password"></a>`password`
 
-Data type: `Optional[String]`
+Data type: `Optional[Variant[Sensitive[String],String]]`
 
 Default encryption password for the Restic repository
 
