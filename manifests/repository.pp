@@ -133,10 +133,10 @@ define restic::repository (
 ) {
   include restic
 
-  $_backup_flags         = pick($backup_flags, $restic::backup_flags)
+  $_backup_flags         = Array(pick($backup_flags, $restic::backup_flags))
   $_backup_path          = $backup_path.lest || { $restic::backup_path }
-  $_backup_pre_cmd       = $backup_pre_cmd.lest || { $restic::backup_pre_cmd }
-  $_backup_post_cmd      = $backup_post_cmd.lest || { $restic::backup_post_cmd }
+  $_backup_pre_cmd       = Array($backup_pre_cmd.lest || { $restic::backup_pre_cmd })
+  $_backup_post_cmd      = Array($backup_post_cmd.lest || { $restic::backup_post_cmd })
   $_backup_timer         = $backup_timer.lest || { $restic::backup_timer }
   $_backup_exit3_success = pick($backup_exit3_success, $restic::backup_exit3_success)
   $_binary               = pick($binary, $restic::binary)
@@ -145,11 +145,11 @@ define restic::repository (
   $_enable_forget        = pick($enable_forget, $restic::enable_forget)
   $_enable_restore       = pick($enable_restore, $restic::enable_restore)
   $_forget               = pick($forget, $restic::forget)
-  $_forget_flags         = pick($forget_flags, $restic::forget_flags)
-  $_forget_pre_cmd       = $forget_pre_cmd.lest || { $restic::forget_pre_cmd }
-  $_forget_post_cmd      = $forget_post_cmd.lest || { $restic::forget_post_cmd }
+  $_forget_flags         = Array(pick($forget_flags, $restic::forget_flags))
+  $_forget_pre_cmd       = Array($forget_pre_cmd.lest || { $restic::forget_pre_cmd })
+  $_forget_post_cmd      = Array($forget_post_cmd.lest || { $restic::forget_post_cmd })
   $_forget_timer         = $forget_timer.lest || { $restic::forget_timer }
-  $_global_flags         = pick($global_flags, $restic::global_flags)
+  $_global_flags         = Array(pick($global_flags, $restic::global_flags))
   $_group                = pick($group, $restic::group)
   $_host                 = pick($host, $restic::host)
   $_id                   = $id.lest || { $restic::id }
@@ -157,10 +157,10 @@ define restic::repository (
   $_key                  = $key.lest || { $restic::key }
   $_password             = pick($password, $restic::password)
   $_prune                = pick($prune, $restic::prune)
-  $_restore_flags        = pick($restore_flags, $restic::restore_flags)
+  $_restore_flags        = Array(pick($restore_flags, $restic::restore_flags))
   $_restore_path         = $restore_path.lest || { $restic::restore_path }
-  $_restore_pre_cmd      = $restore_pre_cmd.lest || { $restic::restore_pre_cmd }
-  $_restore_post_cmd     = $restore_post_cmd.lest || { $restic::restore_post_cmd }
+  $_restore_pre_cmd      = Array($restore_pre_cmd.lest || { $restic::restore_pre_cmd })
+  $_restore_post_cmd     = Array($restore_post_cmd.lest || { $restic::restore_post_cmd })
   $_restore_snapshot     = pick($restore_snapshot, $restic::restore_snapshot)
   $_restore_timer        = $restore_timer.lest || { $restic::restore_timer }
   $_type                 = pick($type, $restic::type)
@@ -217,7 +217,7 @@ define restic::repository (
     }
 
     $config_keys = {
-      'GLOBAL_FLAGS' => [ $_global_flags, ].flatten.join(' '),
+      'GLOBAL_FLAGS' => $_global_flags.join(' '),
     } + $type_config
 
     $config_keys.each |$config,$data| {
@@ -235,18 +235,13 @@ define restic::repository (
   ##
   ## backup service
   ##
-  $backup_commands = [
-    $_backup_pre_cmd,
-    "${_binary} backup \$GLOBAL_FLAGS \$BACKUP_FLAGS",
-    $_backup_post_cmd,
-  ].flatten.delete_undef_values
-
+  $backup_commands = $_backup_pre_cmd + ["${_binary} backup \$GLOBAL_FLAGS \$BACKUP_FLAGS"] + $_backup_post_cmd
   $backup_keys = {
-    'BACKUP_FLAGS' => [ $_backup_flags, $_backup_path, ].flatten.join(' '),
+    'BACKUP_FLAGS' => ($_backup_flags + [$_backup_path]).join(' '),
   }
 
   restic::service { "restic_backup_${title}":
-    commands            => $backup_commands.delete_undef_values,
+    commands            => $backup_commands,
     config              => $config_file,
     configs             => $backup_keys,
     enable              => $_enable_backup,
@@ -259,20 +254,15 @@ define restic::repository (
   ##
   ## forget service
   ##
-  $forget_commands = [
-    $_forget_pre_cmd,
-    "${_binary} forget \$GLOBAL_FLAGS \$FORGET_FLAGS",
-    $_forget_post_cmd,
-  ].flatten.delete_undef_values
-
+  $forget_commands = $_forget_pre_cmd + ["${_binary} forget \$GLOBAL_FLAGS \$FORGET_FLAGS"] + $_forget_post_cmd
   $forgets       = $_forget.map |$k,$v| { "--${k} ${v}" }
-  $forget_prune  = if $_prune { '--prune' } else { undef }
+  $forget_prune  = if $_prune { ['--prune'] } else { [] }
   $forget_keys   = {
-    'FORGET_FLAGS' => [ $forgets, $forget_prune, $_forget_flags, ].delete_undef_values.flatten.join(' '),
+    'FORGET_FLAGS' => ($forgets + $forget_prune + $_forget_flags).join(' '),
   }
 
   restic::service { "restic_forget_${title}":
-    commands => $forget_commands.delete_undef_values,
+    commands => $forget_commands,
     config   => $config_file,
     configs  => $forget_keys,
     enable   => $_enable_forget,
@@ -284,18 +274,14 @@ define restic::repository (
   ##
   ## restore service
   ##
-  $restore_commands = [
-    $_restore_pre_cmd,
-    "${_binary} restore \$GLOBAL_FLAGS \$RESTORE_FLAGS",
-    $_restore_post_cmd,
-  ].flatten.delete_undef_values
+  $restore_commands = $_restore_pre_cmd + ["${_binary} restore \$GLOBAL_FLAGS \$RESTORE_FLAGS"] + $_restore_post_cmd
 
   $restore_keys = {
-    'RESTORE_FLAGS' => [ "-t ${_restore_path}", $_restore_flags, $_restore_snapshot, ].flatten.join(' '),
+    'RESTORE_FLAGS' => (["-t ${_restore_path}"] + $_restore_flags + $_restore_snapshot).join(' '),
   }
 
   restic::service { "restic_restore_${title}":
-    commands => $restore_commands.delete_undef_values,
+    commands => $restore_commands,
     config   => $config_file,
     configs  => $restore_keys,
     enable   => $_enable_restore,
