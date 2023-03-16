@@ -22,17 +22,12 @@ describe 'restic' do
           }
 
           include_examples 'package', parameter
-          include_examples 'reload'
 
           params['repositories']&.each do |repository, config|
             include_examples 'repository', repository, config, parameter
 
             it {
               is_expected.to contain_class('restic::package').that_comes_before("Restic::Repository[#{repository}]")
-            }
-
-            it {
-              is_expected.to contain_restic__repository(repository).that_notifies('Class[restic::reload]')
             }
           end
         end

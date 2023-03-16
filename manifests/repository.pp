@@ -137,7 +137,6 @@ define restic::repository (
   $_backup_path          = $backup_path.lest || { $restic::backup_path }
   $_backup_pre_cmd       = Array($backup_pre_cmd.lest || { $restic::backup_pre_cmd })
   $_backup_post_cmd      = Array($backup_post_cmd.lest || { $restic::backup_post_cmd })
-  $_backup_timer         = $backup_timer.lest || { $restic::backup_timer }
   $_backup_exit3_success = pick($backup_exit3_success, $restic::backup_exit3_success)
   $_binary               = pick($binary, $restic::binary)
   $_bucket               = $bucket.lest || { $restic::bucket }
@@ -164,7 +163,6 @@ define restic::repository (
   $_restore_snapshot     = pick($restore_snapshot, $restic::restore_snapshot)
   $_restore_timer        = $restore_timer.lest || { $restic::restore_timer }
   $_type                 = pick($type, $restic::type)
-  $_user                 = pick($user, $restic::user)
 
   if $_enable_backup and $_backup_path == undef {
     fail("restic::repository[${title}]: You have to set \$backup_path if you enable the backup!")
@@ -174,17 +172,12 @@ define restic::repository (
     fail("restic::repository[${title}]: You have to set \$restore_path if you enable the restore!")
   }
 
-  $success_exit_status = $_backup_exit3_success ? {
-    true    => 3,
-    default => undef,
-  }
-
-  $repository    = $_bucket ? {
+  $repository = $_bucket ? {
     undef   => "${_type}:${_host}",
     default => "${_type}:${_host}/${_bucket}",
   }
 
-  $config_file   = "/etc/default/restic_${title}"
+  $config_file   = "${restic::config_directory}/${title}.env"
   $type_config   = $_type ? {
     's3'    => {
       'AWS_ACCESS_KEY_ID'     => $_id,
@@ -201,16 +194,19 @@ define restic::repository (
   if $_init_repo {
     exec { "restic_init_${repository}_${title}":
       command     => "${_binary} init",
-      environment => $type_config.reduce([]) |$memo,$item| { $memo + "${item[0]}=${item[1]}" }.sort,
+      environment => $type_config.map |$key, $value| { "${key}=${value}" },
       onlyif      => "${_binary} snapshots 2>&1 | grep -q 'Is there a repository at the following location'",
+      require     => Class['restic::package'],
     }
   }
 
   if $_enable_backup or $_enable_forget or $_enable_restore {
+    include restic::config
+
     concat { $config_file:
       ensure         => 'present',
       ensure_newline => true,
-      group          => 'root',
+      group          => $_group,
       mode           => '0440',
       owner          => 'root',
       show_diff      => true,
@@ -220,11 +216,9 @@ define restic::repository (
       'GLOBAL_FLAGS' => $_global_flags.join(' '),
     } + $type_config
 
-    $config_keys.each |$config,$data| {
-      concat::fragment { "restic_fragment_${title}_${config}":
-        content => "${config}='${data}'",
-        target  => $config_file,
-      }
+    concat::fragment { "restic_fragment_${title}":
+      content => epp("${module_name}/config.env.epp", { 'config' => $config_keys }),
+      target  => $config_file,
     }
   } else {
     concat { $config_file:
@@ -235,40 +229,39 @@ define restic::repository (
   ##
   ## backup service
   ##
+  $backup_config_file = "${restic::config_directory}/${title}-backup.env"
   $backup_commands = $_backup_pre_cmd + ["${_binary} backup \$GLOBAL_FLAGS \$BACKUP_FLAGS"] + $_backup_post_cmd
-  $backup_keys = {
-    'BACKUP_FLAGS' => ($_backup_flags + [$_backup_path]).join(' '),
-  }
 
-  restic::service { "restic_backup_${title}":
-    commands            => $backup_commands,
-    config              => $config_file,
-    configs             => $backup_keys,
-    enable              => $_enable_backup,
-    group               => $_group,
-    timer               => $_backup_timer,
-    success_exit_status => $success_exit_status,
-    user                => $_user,
+  restic::service::instance { "backup-${title}":
+    ensure        => bool2str($_enable_backup, 'present', 'absent'),
+    user          => $user,
+    group         => $_group,
+    timer         => $backup_timer,
+    commands      => $backup_commands,
+    config        => {
+      'BACKUP_FLAGS' => join($_backup_flags + [$_backup_path], ' '),
+    },
+    service_entry => {
+      'SuccessExitStatus' => if $_backup_exit3_success { 3 } else { undef },
+    },
   }
 
   ##
   ## forget service
   ##
   $forget_commands = $_forget_pre_cmd + ["${_binary} forget \$GLOBAL_FLAGS \$FORGET_FLAGS"] + $_forget_post_cmd
-  $forgets       = $_forget.map |$k,$v| { "--${k} ${v}" }
+  $forgets = $_forget.map |$k,$v| { "--${k} ${v}" }
   $forget_prune  = if $_prune { ['--prune'] } else { [] }
-  $forget_keys   = {
-    'FORGET_FLAGS' => ($forgets + $forget_prune + $_forget_flags).join(' '),
-  }
 
-  restic::service { "restic_forget_${title}":
-    commands => $forget_commands,
-    config   => $config_file,
-    configs  => $forget_keys,
-    enable   => $_enable_forget,
+  restic::service::instance { "forget-${title}":
+    ensure   => bool2str($_enable_forget, 'present', 'absent'),
+    user     => $user,
     group    => $_group,
     timer    => $_forget_timer,
-    user     => $_user,
+    commands => $forget_commands,
+    config   => {
+      'FORGET_FLAGS' => join($forgets + $forget_prune + $_forget_flags, ' '),
+    },
   }
 
   ##
@@ -276,17 +269,14 @@ define restic::repository (
   ##
   $restore_commands = $_restore_pre_cmd + ["${_binary} restore \$GLOBAL_FLAGS \$RESTORE_FLAGS"] + $_restore_post_cmd
 
-  $restore_keys = {
-    'RESTORE_FLAGS' => (["-t ${_restore_path}"] + $_restore_flags + $_restore_snapshot).join(' '),
-  }
-
-  restic::service { "restic_restore_${title}":
-    commands => $restore_commands,
-    config   => $config_file,
-    configs  => $restore_keys,
-    enable   => $_enable_restore,
+  restic::service::instance { "restore-${title}":
+    ensure   => bool2str($_enable_restore, 'present', 'absent'),
+    user     => $user,
     group    => $_group,
     timer    => $_restore_timer,
-    user     => $_user,
+    commands => $restore_commands,
+    config   => {
+      'RESTORE_FLAGS' => join(["-t ${_restore_path}"] + $_restore_flags + [$_restore_snapshot], ' '),
+    },
   }
 }

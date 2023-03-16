@@ -17,17 +17,14 @@ define restic::repository::post_command (
   Boolean                             $allow_fail      = false,
   Integer[26]                         $order           = 26,
 ) {
-  $service_title = "restic_${restic_command}_${repository_title}"
-  $command_md5   = md5(String($command))
-  $_allow_fail = $allow_fail ? {
-    true  => '-',
-    false => '',
-  }
-  $_command    = [$command].flatten.map |$c| { "ExecStartPost=${_allow_fail}${c}" }
+  $_allow_fail = bool2str($allow_fail, '-', '')
 
-  concat::fragment { "/lib/systemd/system/${service_title}.service-post_commands-${command_md5}":
-    target  => "/lib/systemd/system/${service_title}.service",
-    content => $_command.join("\n"),
-    order   => String($order),
+  systemd::manage_dropin { "restic-post_command-${restic_command}-${title}":
+    unit          => "restic-${restic_command}@${repository_title}.service",
+    # TODO: include order?
+    filename      => "post-${title}.conf",
+    service_entry => {
+      'ExecStartPost' => Array($command).map |$c| { "${_allow_fail}${c}" },
+    },
   }
 }

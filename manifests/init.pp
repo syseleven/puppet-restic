@@ -76,6 +76,9 @@
 # @param group
 #   Default group for systemd services
 #
+# @param manage_group
+#   Whether to manage the default group
+#
 # @param host
 #   Default hostname for the Restic repository
 #
@@ -118,6 +121,21 @@
 # @param user
 #   Default user for systemd services
 #
+# @param manage_user
+#   Whether to mange the default user
+#
+# @param manage_user_homedir
+#   Whether to manage the home directory for the default user
+#
+# @param user_homedir
+#   Home directory for the default user
+#
+# @param user_shell
+#   Shell for the default user
+#
+# @param config_directory
+#   The directory holding the configuration files
+#
 class restic (
   ##
   ## package
@@ -128,6 +146,18 @@ class restic (
   Optional[String[1]]                 $package_version  = undef,
   Optional[String[1]]                 $checksum         = undef,
   Enum['package', 'url']              $install_method   = 'package',
+
+  ##
+  ## Config
+  ##
+  String                                        $group                = 'restic',
+  Boolean                                       $manage_group         = true,
+  String[1]                                     $user                 = 'restic',
+  Stdlib::Absolutepath                          $user_shell           = '/usr/sbin/nologin',
+  Boolean                                       $manage_user          = true,
+  Stdlib::Absolutepath                          $user_homedir         = '/var/lib/restic',
+  Boolean                                       $manage_user_homedir  = true,
+  Stdlib::Absolutepath                          $config_directory     = '/etc/restic',
 
   ##
   ## backups/forgets/restores
@@ -154,7 +184,6 @@ class restic (
   Variant[Array[String[1]],String[1]]           $forget_post_cmd      = [],
   Optional[String[1]]                           $forget_timer         = undef,
   Variant[Array[String[1]],String[1]]           $global_flags         = [],
-  String                                        $group                = 'root',
   Optional[String]                              $host                 = undef,
   Optional[String]                              $id                   = undef,
   Boolean                                       $init_repo            = true,
@@ -168,16 +197,12 @@ class restic (
   String[1]                                     $restore_snapshot     = 'latest',
   Optional[String[1]]                           $restore_timer        = undef,
   Restic::Repository::Type                      $type                 = 's3',
-  String[1]                                     $user                 = 'root',
 ) {
   contain restic::package
-  contain restic::reload
 
   $repositories.each |$repository, $config| {
     restic::repository { $repository:
       * => $config,
     }
-
-    Class['restic::package'] -> Restic::Repository[$repository] ~> Class['restic::reload']
   }
 }
