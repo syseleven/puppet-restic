@@ -23,6 +23,20 @@
   ],
   "operatingsystem_support": [
     {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "8",
+        "9"
+      ]
+    },
+    {
+      "operatingsystem": "Fedora",
+      "operatingsystemrelease": [
+        "36",
+        "37"
+      ]
+    },
+    {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
         "20.04",
