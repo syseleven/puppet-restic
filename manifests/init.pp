@@ -83,7 +83,7 @@
 #   Default hostname for the Restic repository
 #
 # @param id
-#   Default S3 storage id for an S3 bucket
+#   Default S3 storage id for an S3 bucket, or username for sftp
 #
 # @param init_repo
 #   Default enable the initialization of the repository

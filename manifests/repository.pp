@@ -59,7 +59,7 @@
 #   Default hostname for the Restic repository
 #
 # @param id
-#   Default S3 storage id for an S3 bucket
+#   Default S3 storage id for an S3 bucket, or username for sftp
 #
 # @param init_repo
 #   Default enable the initialization of the repository
@@ -92,7 +92,7 @@
 #   Default systemd timer for restore see: https://wiki.archlinux.de/title/Systemd/Timers
 #
 # @param type
-#   Default name for the Restic repository. Only S3 supported
+#   Type for the Restic repository
 #
 # @param user
 #   Default user for systemd services
@@ -172,9 +172,16 @@ define restic::repository (
     fail("restic::repository[${title}]: You have to set \$restore_path if you enable the restore!")
   }
 
-  $repository = $_bucket ? {
-    undef   => "${_type}:${_host}",
-    default => "${_type}:${_host}/${_bucket}",
+  if $_type == 'sftp' {
+    $_sftp_username = $_id
+    $_sftp_path = pick($_bucket, 'restic-repo')
+
+    $repository = "${_type}:${_sftp_username}@${_host}:${_sftp_path}"
+  } else {
+    $repository = $_bucket ? {
+      undef   => "${_type}:${_host}",
+      default => "${_type}:${_host}/${_bucket}",
+    }
   }
 
   $config_file   = "${restic::config_directory}/${title}.env"
