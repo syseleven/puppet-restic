@@ -76,11 +76,14 @@
 # @param group
 #   Default group for systemd services
 #
+# @param manage_group
+#   Whether to manage the default group
+#
 # @param host
 #   Default hostname for the Restic repository
 #
 # @param id
-#   Default S3 storage id for an S3 bucket
+#   Default S3 storage id for an S3 bucket, or username for sftp
 #
 # @param init_repo
 #   Default enable the initialization of the repository
@@ -118,6 +121,21 @@
 # @param user
 #   Default user for systemd services
 #
+# @param manage_user
+#   Whether to mange the default user
+#
+# @param manage_user_homedir
+#   Whether to manage the home directory for the default user
+#
+# @param user_homedir
+#   Home directory for the default user
+#
+# @param user_shell
+#   Shell for the default user
+#
+# @param config_directory
+#   The directory holding the configuration files
+#
 class restic (
   ##
   ## package
@@ -130,6 +148,18 @@ class restic (
   Enum['package', 'url']              $install_method   = 'package',
 
   ##
+  ## Config
+  ##
+  String                                        $group                = 'restic',
+  Boolean                                       $manage_group         = true,
+  String[1]                                     $user                 = 'restic',
+  Stdlib::Absolutepath                          $user_shell           = '/usr/sbin/nologin',
+  Boolean                                       $manage_user          = true,
+  Stdlib::Absolutepath                          $user_homedir         = '/var/lib/restic',
+  Boolean                                       $manage_user_homedir  = true,
+  Stdlib::Absolutepath                          $config_directory     = '/etc/restic',
+
+  ##
   ## backups/forgets/restores
   ##
   Restic::Repositories                $repositories     = {},
@@ -139,8 +169,8 @@ class restic (
   ##
   Variant[Array[String[1]],String[1]]           $backup_flags         = [],
   Optional[Restic::Path]                        $backup_path          = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $backup_pre_cmd       = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $backup_post_cmd      = undef,
+  Variant[Array[String[1]],String[1]]           $backup_pre_cmd       = [],
+  Variant[Array[String[1]],String[1]]           $backup_post_cmd      = [],
   Optional[String[1]]                           $backup_timer         = undef,
   Boolean                                       $backup_exit3_success = false,
   Stdlib::Absolutepath                          $binary               = '/usr/bin/restic',
@@ -150,11 +180,10 @@ class restic (
   Boolean                                       $enable_restore       = false,
   Restic::Forget                                $forget               = {},
   Variant[Array[String[1]],String[1]]           $forget_flags         = [],
-  Optional[Variant[Array[String[1]],String[1]]] $forget_pre_cmd       = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd      = undef,
+  Variant[Array[String[1]],String[1]]           $forget_pre_cmd       = [],
+  Variant[Array[String[1]],String[1]]           $forget_post_cmd      = [],
   Optional[String[1]]                           $forget_timer         = undef,
   Variant[Array[String[1]],String[1]]           $global_flags         = [],
-  String                                        $group                = 'root',
   Optional[String]                              $host                 = undef,
   Optional[String]                              $id                   = undef,
   Boolean                                       $init_repo            = true,
@@ -163,21 +192,17 @@ class restic (
   Boolean                                       $prune                = false,
   Variant[Array[String[1]],String[1]]           $restore_flags        = [],
   Optional[Stdlib::Absolutepath]                $restore_path         = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd      = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $restore_post_cmd     = undef,
+  Variant[Array[String[1]],String[1]]           $restore_pre_cmd      = [],
+  Variant[Array[String[1]],String[1]]           $restore_post_cmd     = [],
   String[1]                                     $restore_snapshot     = 'latest',
   Optional[String[1]]                           $restore_timer        = undef,
   Restic::Repository::Type                      $type                 = 's3',
-  String[1]                                     $user                 = 'root',
 ) {
   contain restic::package
-  contain restic::reload
 
   $repositories.each |$repository, $config| {
     restic::repository { $repository:
       * => $config,
     }
-
-    Class['restic::package'] -> Restic::Repository[$repository] ~> Class['restic::reload']
   }
 }

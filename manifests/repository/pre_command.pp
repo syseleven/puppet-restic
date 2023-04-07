@@ -17,17 +17,14 @@ define restic::repository::pre_command (
   Boolean                             $allow_fail      = false,
   Integer[11,24]                      $order           = 11,
 ) {
-  $service_title = "restic_${restic_command}_${repository_title}"
-  $command_md5   = md5(String($command))
-  $_allow_fail   = $allow_fail ? {
-    true  => '-',
-    false => '',
-  }
-  $_command    = [$command].flatten.map |$c| { "ExecStartPre=${_allow_fail}${c}" }
+  $_allow_fail = bool2str($allow_fail, '-', '')
 
-  concat::fragment { "/lib/systemd/system/${service_title}.service-pre_commands-${command_md5}":
-    target  => "/lib/systemd/system/${service_title}.service",
-    content => $_command.join("\n"),
-    order   => String($order),
+  systemd::manage_dropin { "restic-pre_command-${restic_command}-${title}":
+    unit          => "restic-${restic_command}@${repository_title}.service",
+    # TODO: include order?
+    filename      => "pre-${title}.conf",
+    service_entry => {
+      'ExecStartPre' => Array($command).map |$c| { "${_allow_fail}${c}" },
+    },
   }
 }

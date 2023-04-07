@@ -1,0 +1,16 @@
+<%- |
+  String[1] $service,
+  Optional[String[1]] $timer = undef,
+| -%>
+[Unit]
+# the timer, enabled as <%= $service %>your-repo.timer, will trigger
+# <%= $service %>your-repo.service
+Description=Run Restic on a timer
+
+[Install]
+WantedBy=timers.target
+<% if $timer { -%>
+
+[Timer]
+OnCalendar=<%= $timer %>
+<% } -%>
