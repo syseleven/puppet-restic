@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.6.0
+
+**Features**
+- Support Sensitive data type for host, id, key and password from Matthias Baur <m.baur@syseleven.de>
+
 ## Release 2.5.2
+
 - Make systemd SuccessExitStatus configruable from Matthias Baur <m.baur@syseleven.de>
 
   This makes it possible to accept Restic exit code 3 to be accepted as a
