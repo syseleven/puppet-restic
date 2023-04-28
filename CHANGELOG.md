@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.6.1
+
+**Bugfix**
+- Unwrap sensitive environment variables from Matthias Baur <m.baur@syseleven.de>
+
 ## Release 2.6.0
 
 **Features**
