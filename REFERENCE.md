@@ -829,7 +829,7 @@ Default value: `11`
 
 All valid forget parameter
 
-Alias of `Hash[Enum['keep-last','keep-hourly','keep-daily','keep-weekly','keep-monthly','keep-yearly','keep-within','keep-tag'], Integer[1]]`
+Alias of `Hash[Enum['keep-last','keep-hourly','keep-daily','keep-weekly','keep-monthly','keep-yearly','keep-within','keep-within-hourly','keep-within-daily','keep-within-weekly','keep-within-monthly','keep-within-yearly','keep-tag'], Variant[Integer[1],String[1]]]`
 
 ### <a name="Restic--Path"></a>`Restic::Path`
 
