@@ -98,12 +98,12 @@
 #   Default user for systemd services
 #
 define restic::repository (
+  Optional[Boolean]                             $backup_exit3_success = undef,
   Optional[Variant[Array[String[1]],String[1]]] $backup_flags         = undef,
   Optional[Restic::Path]                        $backup_path          = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $backup_pre_cmd       = undef,
   Optional[Variant[Array[String[1]],String[1]]] $backup_post_cmd      = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $backup_pre_cmd       = undef,
   Optional[String[1]]                           $backup_timer         = undef,
-  Optional[Boolean]                             $backup_exit3_success = undef,
   Optional[Stdlib::Absolutepath]                $binary               = undef,
   Optional[String]                              $bucket               = undef,
   Optional[Boolean]                             $enable_backup        = undef,
@@ -124,8 +124,8 @@ define restic::repository (
   Optional[Boolean]                             $prune                = undef,
   Optional[Variant[Array[String[1]],String[1]]] $restore_flags        = undef,
   Optional[Stdlib::Absolutepath]                $restore_path         = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd      = undef,
   Optional[Variant[Array[String[1]],String[1]]] $restore_post_cmd     = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd      = undef,
   Optional[String[1]]                           $restore_snapshot     = undef,
   Optional[String[1]]                           $restore_timer        = undef,
   Optional[Restic::Repository::Type]            $type                 = undef,
@@ -133,12 +133,12 @@ define restic::repository (
 ) {
   include restic
 
+  $_backup_exit3_success = pick($backup_exit3_success, $restic::backup_exit3_success)
   $_backup_flags         = pick($backup_flags, $restic::backup_flags)
   $_backup_path          = $backup_path.lest || { $restic::backup_path }
-  $_backup_pre_cmd       = $backup_pre_cmd.lest || { $restic::backup_pre_cmd }
   $_backup_post_cmd      = $backup_post_cmd.lest || { $restic::backup_post_cmd }
+  $_backup_pre_cmd       = $backup_pre_cmd.lest || { $restic::backup_pre_cmd }
   $_backup_timer         = $backup_timer.lest || { $restic::backup_timer }
-  $_backup_exit3_success = pick($backup_exit3_success, $restic::backup_exit3_success)
   $_binary               = pick($binary, $restic::binary)
   $_bucket               = $bucket.lest || { $restic::bucket }
   $_enable_backup        = pick($enable_backup, $restic::enable_backup)
@@ -146,8 +146,8 @@ define restic::repository (
   $_enable_restore       = pick($enable_restore, $restic::enable_restore)
   $_forget               = pick($forget, $restic::forget)
   $_forget_flags         = pick($forget_flags, $restic::forget_flags)
-  $_forget_pre_cmd       = $forget_pre_cmd.lest || { $restic::forget_pre_cmd }
   $_forget_post_cmd      = $forget_post_cmd.lest || { $restic::forget_post_cmd }
+  $_forget_pre_cmd       = $forget_pre_cmd.lest || { $restic::forget_pre_cmd }
   $_forget_timer         = $forget_timer.lest || { $restic::forget_timer }
   $_global_flags         = pick($global_flags, $restic::global_flags)
   $_group                = pick($group, $restic::group)
@@ -159,8 +159,8 @@ define restic::repository (
   $_prune                = pick($prune, $restic::prune)
   $_restore_flags        = pick($restore_flags, $restic::restore_flags)
   $_restore_path         = $restore_path.lest || { $restic::restore_path }
-  $_restore_pre_cmd      = $restore_pre_cmd.lest || { $restic::restore_pre_cmd }
   $_restore_post_cmd     = $restore_post_cmd.lest || { $restic::restore_post_cmd }
+  $_restore_pre_cmd      = $restore_pre_cmd.lest || { $restic::restore_pre_cmd }
   $_restore_snapshot     = pick($restore_snapshot, $restic::restore_snapshot)
   $_restore_timer        = $restore_timer.lest || { $restic::restore_timer }
   $_type                 = pick($type, $restic::type)
