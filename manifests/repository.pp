@@ -124,7 +124,7 @@ define restic::repository (
   Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd      = undef,
   Optional[String[1]]                           $forget_timer         = undef,
   Optional[Variant[Array[String[1]],String[1]]] $global_flags         = undef,
-  Optional[Stdlib::Absolutepath]                $google_credentials   = undef,
+  Optional[Variant[Sensitive[String],String]]   $google_credentials   = undef,
   Optional[Variant[Sensitive[String],String]]   $google_repository    = undef,
   Optional[Variant[Sensitive[String],String]]   $google_project_id    = undef,
   Optional[String]                              $group                = undef,
@@ -164,7 +164,7 @@ define restic::repository (
   $_global_flags         = pick($global_flags, $restic::global_flags)
   $_google_credentials   = $google_credentials.lest || { $restic::google_credentials }
   $_google_project_id    = $google_project_id.lest || { $restic::google_project_id }
-  $_google_repository    = pick($google_repository, $restic::google_repository)
+  $_google_repository    = $google_repository.lest || { $restic::google_repository }
   $_group                = pick($group, $restic::group)
   $_host                 = $host.lest || { $restic::host }
   $_id                   = $id.lest || { $restic::id }

@@ -37,6 +37,7 @@ TESTS = {
   'one repo and init' => {
     'repositories' => {
       'initonly' => {
+        'type' => 's3',
         'bucket' => 'some_bucket_value',
         'enable_backup' => false,
         'host' => 'some_host_value',
@@ -49,6 +50,7 @@ TESTS = {
   'one repo without init' => {
     'repositories' => {
       'nothing' => {
+        'type' => 's3',
         'bucket' => 'some_bucket_value',
         'enable_backup' => false,
         'host' => 'some_host_value',
@@ -62,6 +64,7 @@ TESTS = {
   'backup and backup_timer' => {
     'repositories' => {
       'backup1' => {
+        'type' => 's3',
         'backup_path' => '/home/rspec',
         'backup_timer' => 'Sunday',
         'bucket' => 'some_bucket_value',
@@ -76,6 +79,7 @@ TESTS = {
   'backup and backup_pre_cmd' => {
     'repositories' => {
       'backup2' => {
+        'type' => 's3',
         'backup_path' => '/home/rspec',
         'backup_timer' => 'Sunday',
         'backup_pre_cmd' => 'touch foo bar',
@@ -91,6 +95,7 @@ TESTS = {
   'restore and restore_timer' => {
     'repositories' => {
       'restore1' => {
+        'type' => 's3',
         'bucket' => 'some_bucket_value',
         'enable_backup' => false,
         'enable_restore' => true,
@@ -106,6 +111,7 @@ TESTS = {
   'backup and restore and forget' => {
     'repositories' => {
       'backup3' => {
+        'type' => 's3',
         'backup_path' => '/home/backup',
         'backup_timer' => 'Monday',
         'bucket' => 'some_bucket_value',
@@ -129,6 +135,7 @@ TESTS = {
   'backup with type rest' => {
     'repositories' => {
       'backup1' => {
+        'type' => 's3',
         'type' => 'rest',
         'backup_path' => '/home/backup',
         'host' => 'https://rest-backup-server',
@@ -139,6 +146,7 @@ TESTS = {
   'backup with backup_exit3_success => true' => {
     'repositories' => {
       'backup1' => {
+        'type' => 's3',
         'backup_path' => '/home/backup',
         'bucket' => 'some_bucket_value',
         'host' => 'some_host_value',
@@ -146,6 +154,35 @@ TESTS = {
         'key' => 'some_key_value',
         'password' => 'some_password_value',
         'backup_exit3_success' => true,
+      }
+    }
+  },
+  'one repo with gs backend' => {
+    'repositories' => { 
+      'backup1' => {
+        'type' => 'gs',
+        'enable_backup' => false,
+        'init_repo' => true,
+        'google_project_id' => 'some_project_id',
+        'google_credentials' => 'some_credentials_value',
+        'password' => 'test',
+        'bucket' => 'some_bucket_value',
+        'google_repository' => 'some_repository',
+      }
+    }
+  },
+  'backup and backup_timer with gs backend' => {
+    'repositories' => {
+      'gsbackup1' => {
+        'type' => 'gs',
+        'backup_path' => '/home/rspec',
+        'backup_timer' => 'Sunday',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => true,
+        'google_project_id' => 'some_project_id',
+        'google_credentials' => 'some_credentials_value',
+        'google_repository' => 'some_repository',
+        'password' => 'some_password_value',
       }
     }
   },
