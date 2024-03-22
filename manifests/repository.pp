@@ -166,7 +166,7 @@ define restic::repository (
   $_google_project_id    = $google_project_id.lest || { $restic::google_project_id }
   $_google_repository    = pick($google_repository, $restic::google_repository)
   $_group                = pick($group, $restic::group)
-  $_host                 = pick($host, $restic::host)
+  $_host                 = $host.lest || { $restic::host }
   $_id                   = $id.lest || { $restic::id }
   $_init_repo            = pick($init_repo, $restic::init_repo)
   $_key                  = $key.lest || { $restic::key }
