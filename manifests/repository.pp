@@ -52,6 +52,15 @@
 # @param global_flags
 #   Default global flags for `restic <flags>`. See `restic --help`
 #
+# @param google_credentials
+#   Default path to the Google Cloud credentials file
+#
+# @param google_project_id
+#   Default Google Cloud project id
+
+# @param google_repository
+#   Default Google Cloud repository name
+#
 # @param group
 #   Default group for systemd services
 #
@@ -115,6 +124,9 @@ define restic::repository (
   Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd      = undef,
   Optional[String[1]]                           $forget_timer         = undef,
   Optional[Variant[Array[String[1]],String[1]]] $global_flags         = undef,
+  Optional[Stdlib::Absolutepath]                $google_credentials   = undef,
+  Optional[Variant[Sensitive[String],String]]   $google_repository    = undef,
+  Optional[Variant[Sensitive[String],String]]   $google_project_id    = undef,
   Optional[String]                              $group                = undef,
   Optional[Variant[Sensitive[String],String]]   $host                 = undef,
   Optional[Variant[Sensitive[String],String]]   $id                   = undef,
@@ -150,6 +162,9 @@ define restic::repository (
   $_forget_pre_cmd       = $forget_pre_cmd.lest || { $restic::forget_pre_cmd }
   $_forget_timer         = $forget_timer.lest || { $restic::forget_timer }
   $_global_flags         = pick($global_flags, $restic::global_flags)
+  $_google_credentials   = $google_credentials.lest || { $restic::google_credentials }
+  $_google_project_id    = $google_project_id.lest || { $restic::google_project_id }
+  $_google_repository    = pick($google_repository, $restic::google_repository)
   $_group                = pick($group, $restic::group)
   $_host                 = pick($host, $restic::host)
   $_id                   = $id.lest || { $restic::id }
@@ -179,9 +194,18 @@ define restic::repository (
     default => undef,
   }
 
-  $repository    = $_bucket ? {
+  $repository_value = case $_type {
+    'gs': {
+      "${_type}:${_bucket}:/${_google_repository}"
+    }
+    default: {
+      "${_type}:${_host.unwrap}/${_bucket}"
+    }
+  }
+
+  $repository = $_bucket ? {
     undef   => "${_type}:${_host.unwrap}",
-    default => "${_type}:${_host.unwrap}/${_bucket}",
+    default => $repository_value,
   }
 
   $config_file   = "/etc/default/restic_${title}"
@@ -191,6 +215,12 @@ define restic::repository (
       'AWS_SECRET_ACCESS_KEY' => $_key,
       'RESTIC_PASSWORD'       => $_password,
       'RESTIC_REPOSITORY'     => $repository,
+    },
+    'gs' => {
+      'GOOGLE_PROJECT_ID'                => $_google_project_id,
+      'GOOGLE_APPLICATION_CREDENTIALS'   => $_google_credentials,
+      'RESTIC_PASSWORD'                  => $_password,
+      'RESTIC_REPOSITORY'                => $repository,
     },
     default => {
       'RESTIC_PASSWORD'   => $_password,
