@@ -124,7 +124,7 @@ define restic::repository (
   Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd      = undef,
   Optional[String[1]]                           $forget_timer         = undef,
   Optional[Variant[Array[String[1]],String[1]]] $global_flags         = undef,
-  Optional[Variant[Sensitive[String],String]]   $google_credentials   = undef,
+  Optional[Stdlib::Absolutepath]                $google_credentials   = undef,
   Optional[Variant[Sensitive[String],String]]   $google_repository    = undef,
   Optional[Variant[Sensitive[String],String]]   $google_project_id    = undef,
   Optional[String]                              $group                = undef,
