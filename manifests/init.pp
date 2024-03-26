@@ -170,7 +170,7 @@ class restic (
   Optional[Variant[Array[String[1]],String[1]]] $restore_post_cmd     = undef,
   String[1]                                     $restore_snapshot     = 'latest',
   Optional[String[1]]                           $restore_timer        = undef,
-  Restic::Repository::Type                      $type                 = 'gs',
+  Restic::Repository::Type                      $type                 = 's3',
   String[1]                                     $user                 = 'root',
 ) {
   contain restic::package
