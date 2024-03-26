@@ -73,6 +73,15 @@
 # @param global_flags
 #   Default global flags for `restic <flags>`. See `restic --help`
 #
+# @param google_credentials
+#   Default path to the Google Cloud service account credentials see: https://cloud.google.com/iam/docs/service-account-creds 
+#
+# @param google_project_id
+#   Default Google Cloud project id see: https://cloud.google.com/resource-manager/docs/creating-managing-projects
+#
+# @param google_repository
+#   Default repository name for used in Google Cloud Storage buckets
+#
 # @param group
 #   Default group for systemd services
 #
