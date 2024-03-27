@@ -126,7 +126,7 @@ TESTS = {
       }
     }
   },
-  'backup with type rest with' => {
+  'backup with type rest' => {
     'repositories' => {
       'backup1' => {
         'type' => 'rest',
