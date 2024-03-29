@@ -144,7 +144,7 @@ class restic (
   Restic::Repositories                $repositories     = {},
 
   ##
-  ## default values for restic::resositories
+  ## default values for restic::repositories
   ##
   Variant[Array[String[1]],String[1]]           $backup_flags         = [],
   Optional[Restic::Path]                        $backup_path          = undef,
