@@ -18,12 +18,12 @@ shared_examples 'repository' do |title, config, params|
   type = values['type']
   host = values['host']
   bucket = values['bucket']
-  google_repository = values['google_repository']
+  gcs_repository = values['gcs_repository']
 
   success_exit_status = values['backup_exit3_success'] ? 3 : :undef
   repository = case type
                when 'gs'
-                 "#{type}:#{bucket}:/#{google_repository}"
+                 "#{type}:#{bucket}:/#{gcs_repository}"
                else
                  bucket == :undef ? "#{type}:#{host}" : "#{type}:#{host}/#{bucket}"
                end
@@ -38,8 +38,8 @@ shared_examples 'repository' do |title, config, params|
                   }
                 when 'gs'
                   {
-                    'GOOGLE_PROJECT_ID' => values['google_project_id'],
-                    'GOOGLE_APPLICATION_CREDENTIALS' => values['google_credentials'],
+                    'GOOGLE_PROJECT_ID' => values['gcs_project_id'],
+                    'GOOGLE_APPLICATION_CREDENTIALS' => values['gcs_credentials_path'],
                     'RESTIC_PASSWORD' => values['password'],
                     'RESTIC_REPOSITORY' => repository,
                   }
