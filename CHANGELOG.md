@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.7.0
+
+**Features**
+- Add Google Cloud Storage backend support from DriteMorinaPXL <morinadrite@gmail.com>
+
 ## Release 2.6.1
 
 **Bugfix**
