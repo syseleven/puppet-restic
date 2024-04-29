@@ -149,4 +149,116 @@ TESTS = {
       }
     }
   },
+  'one repo and init with gs backend' => {
+    'repositories' => {
+      'initonly' => {
+        'type' => 'gs',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => false,
+        'gcs_project_id' => 'some_project_id',
+        'gcs_repository' => 'some_gcs_repository',
+        'gcs_credentials_path' => '/some/path/to/credentials',
+        'password' => 'some_password_value',
+      }
+    }
+  },
+  'one repo without init with gs backend' => {
+    'repositories' => {
+      'nothing' => {
+        'type' => 'gs',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => false,
+        'gcs_project_id' => 'some_project_id',
+        'gcs_repository' => 'some_gcs_repository',
+        'gcs_credentials_path' => '/some/path/to/credentials',
+        'init_repo' => false,
+        'password' => 'some_password_value',
+      }
+    }
+  },
+  'backup and backup_timer with gs backend' => {
+    'repositories' => {
+      'backup1' => {
+        'type' => 'gs',
+        'backup_path' => '/home/rspec',
+        'backup_timer' => 'Sunday',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => true,
+        'gcs_project_id' => 'some_project_id',
+        'gcs_repository' => 'some_gcs_repository',
+        'gcs_credentials_path' => '/some/path/to/credentials',
+        'password' => 'some_password_value',
+      }
+    }
+  },
+  'backup and backup_pre_cmd with gs backend' => {
+    'repositories' => {
+      'backup2' => {
+        'type' => 'gs',
+        'backup_path' => '/home/rspec',
+        'backup_timer' => 'Sunday',
+        'backup_pre_cmd' => 'touch foo bar',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => true,
+        'gcs_project_id' => 'some_project_id',
+        'gcs_repository' => 'some_gcs_repository',
+        'gcs_credentials_path' => '/some/path/to/credentials',
+        'password' => 'some_password_value',
+      }
+    }
+  },
+  'restore and restore_timer with gs backend' => {
+    'repositories' => {
+      'restore1' => {
+        'type' => 'gs',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => false,
+        'enable_restore' => true,
+        'gcs_project_id' => 'some_project_id',
+        'gcs_repository' => 'some_gcs_repository',
+        'gcs_credentials_path' => '/some/path/to/credentials',
+        'password' => 'some_password_value',
+        'restore_path' => '/home/rspec',
+        'restore_timer' => 'Sunday',
+      }
+    }
+  },
+  'backup and restore and forget with gs backend' => {
+    'repositories' => {
+      'backup3' => {
+        'type' => 'gs',
+        'backup_path' => '/home/backup',
+        'backup_timer' => 'Monday',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => false,
+        'enable_forget' => true,
+        'enable_restore' => true,
+        'forget' => {
+          'keep-last' => 120,
+        },
+        'forget_timer' => 'forget_timer',
+        'gcs_project_id' => 'some_project_id',
+        'gcs_repository' => 'some_gcs_repository',
+        'gcs_credentials_path' => '/some/path/to/credentials',
+        'password' => 'some_password_value',
+        'restore_path' => '/home/restore',
+        'restore_timer' => 'Sunday',
+        'prune' => true,
+      }
+    }
+  },
+  'backup with gs backend with backup_exit3_success => true' => {
+    'repositories' => {
+      'backup1' => {
+        'type' => 'gs',
+        'backup_path' => '/home/backup',
+        'bucket' => 'some_bucket_value',
+        'gcs_project_id' => 'some_project_id',
+        'gcs_repository' => 'some_gcs_repository',
+        'gcs_credentials_path' => '/some/path/to/credentials',
+        'password' => 'some_password_value',
+        'backup_exit3_success' => true,
+      }
+    }
+  },
 }.merge(cmd_tests).freeze

@@ -73,6 +73,15 @@
 # @param global_flags
 #   Default global flags for `restic <flags>`. See `restic --help`
 #
+# @param gcs_credentials_path
+#   Default path to the file containing the Google Cloud service account credentials which allows access to the bucket. Need to be downloaded from Google Cloud see: https://cloud.google.com/iam/docs/service-account-creds
+#
+# @param gcs_project_id
+#   Default Google Cloud project id see: https://cloud.google.com/resource-manager/docs/creating-managing-projects
+#
+# @param gcs_repository
+#   Default repository name used in Google Cloud Storage buckets
+#
 # @param group
 #   Default group for systemd services
 #
@@ -135,7 +144,7 @@ class restic (
   Restic::Repositories                $repositories     = {},
 
   ##
-  ## default values for restic::resositories
+  ## default values for restic::repositories
   ##
   Variant[Array[String[1]],String[1]]           $backup_flags         = [],
   Optional[Restic::Path]                        $backup_path          = undef,
@@ -154,6 +163,9 @@ class restic (
   Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd      = undef,
   Optional[String[1]]                           $forget_timer         = undef,
   Variant[Array[String[1]],String[1]]           $global_flags         = [],
+  Optional[Stdlib::Absolutepath]                $gcs_credentials_path = undef,
+  Optional[Variant[Sensitive[String],String]]   $gcs_project_id       = undef,
+  Optional[Variant[Sensitive[String],String]]   $gcs_repository       = undef,
   String                                        $group                = 'root',
   Optional[Variant[Sensitive[String],String]]   $host                 = undef,
   Optional[Variant[Sensitive[String],String]]   $id                   = undef,

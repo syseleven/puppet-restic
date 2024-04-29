@@ -52,6 +52,15 @@
 # @param global_flags
 #   Default global flags for `restic <flags>`. See `restic --help`
 #
+# @param gcs_credentials
+#   Default path to the file containing the Google Cloud service account credentials which allows access to the bucket. Need to be downloaded from Google Cloud see: https://cloud.google.com/iam/docs/service-account-creds
+#
+# @param gcs_project_id
+#   Default Google Cloud project id see: https://cloud.google.com/resource-manager/docs/creating-managing-projects
+#
+# @param gcs_repository
+#   Default repository name used in Google Cloud Storage buckets
+#
 # @param group
 #   Default group for systemd services
 #
@@ -115,6 +124,9 @@ define restic::repository (
   Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd      = undef,
   Optional[String[1]]                           $forget_timer         = undef,
   Optional[Variant[Array[String[1]],String[1]]] $global_flags         = undef,
+  Optional[Stdlib::Absolutepath]                $gcs_credentials_path = undef,
+  Optional[Variant[Sensitive[String],String]]   $gcs_repository       = undef,
+  Optional[Variant[Sensitive[String],String]]   $gcs_project_id       = undef,
   Optional[String]                              $group                = undef,
   Optional[Variant[Sensitive[String],String]]   $host                 = undef,
   Optional[Variant[Sensitive[String],String]]   $id                   = undef,
@@ -150,8 +162,11 @@ define restic::repository (
   $_forget_pre_cmd       = $forget_pre_cmd.lest || { $restic::forget_pre_cmd }
   $_forget_timer         = $forget_timer.lest || { $restic::forget_timer }
   $_global_flags         = pick($global_flags, $restic::global_flags)
+  $_gcs_credentials_path = $gcs_credentials_path.lest || { $restic::gcs_credentials_path }
+  $_gcs_project_id       = $gcs_project_id.lest || { $restic::gcs_project_id }
+  $_gcs_repository       = $gcs_repository.lest || { $restic::gcs_repository }
   $_group                = pick($group, $restic::group)
-  $_host                 = pick($host, $restic::host)
+  $_host                 = $host.lest || { $restic::host }
   $_id                   = $id.lest || { $restic::id }
   $_init_repo            = pick($init_repo, $restic::init_repo)
   $_key                  = $key.lest || { $restic::key }
@@ -179,9 +194,18 @@ define restic::repository (
     default => undef,
   }
 
-  $repository    = $_bucket ? {
+  $repository_value = case $_type {
+    'gs': {
+      "${_type}:${_bucket}:/${_gcs_repository}"
+    }
+    default: {
+      "${_type}:${_host.unwrap}/${_bucket}"
+    }
+  }
+
+  $repository = $_bucket ? {
     undef   => "${_type}:${_host.unwrap}",
-    default => "${_type}:${_host.unwrap}/${_bucket}",
+    default => $repository_value,
   }
 
   $config_file   = "/etc/default/restic_${title}"
@@ -191,6 +215,12 @@ define restic::repository (
       'AWS_SECRET_ACCESS_KEY' => $_key,
       'RESTIC_PASSWORD'       => $_password,
       'RESTIC_REPOSITORY'     => $repository,
+    },
+    'gs' => {
+      'GOOGLE_PROJECT_ID'                => $_gcs_project_id,
+      'GOOGLE_APPLICATION_CREDENTIALS'   => $_gcs_credentials_path,
+      'RESTIC_PASSWORD'                  => $_password,
+      'RESTIC_REPOSITORY'                => $repository,
     },
     default => {
       'RESTIC_PASSWORD'   => $_password,
