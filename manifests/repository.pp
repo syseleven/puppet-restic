@@ -100,8 +100,14 @@
 # @param restore_timer
 #   Default systemd timer for restore see: https://wiki.archlinux.de/title/Systemd/Timers
 #
+# @param sftp_port
+#   Default port for the SFTP repository. If the port is 22, this does not need to be filled in as Restic automatically uses this port
+#
+# @param sftp_user
+#   The user who connects to the SFTP repository
+#
 # @param type
-#   Default name for the Restic repository. Only S3 supported
+#   Default name for the Restic repository. s3, gs and rest supported.
 #
 # @param user
 #   Default user for systemd services
@@ -140,6 +146,8 @@ define restic::repository (
   Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd      = undef,
   Optional[String[1]]                           $restore_snapshot     = undef,
   Optional[String[1]]                           $restore_timer        = undef,
+  Optional[String]                              $sftp_port            = undef,
+  Optional[String]                              $sftp_user            = undef,
   Optional[Restic::Repository::Type]            $type                 = undef,
   Optional[String[1]]                           $user                 = undef,
 ) {
@@ -178,6 +186,8 @@ define restic::repository (
   $_restore_pre_cmd      = $restore_pre_cmd.lest || { $restic::restore_pre_cmd }
   $_restore_snapshot     = pick($restore_snapshot, $restic::restore_snapshot)
   $_restore_timer        = $restore_timer.lest || { $restic::restore_timer }
+  $_sftp_port            = $sftp_port.lest || { $restic::sftp_port }
+  $_sftp_user            = $sftp_user.lest || { $restic::sftp_user }
   $_type                 = pick($type, $restic::type)
   $_user                 = pick($user, $restic::user)
 
@@ -195,11 +205,18 @@ define restic::repository (
   }
 
   $repository_value = case $_type {
+    default: {
+      "${_type}:${_host.unwrap}/${_bucket}"
+    }
     'gs': {
       "${_type}:${_bucket}:/${_gcs_repository}"
     }
-    default: {
-      "${_type}:${_host.unwrap}/${_bucket}"
+    'sftp': {
+      if $_sftp_port {
+        "${_type}://${_sftp_user}@[${_host.unwrap}]:${_sftp_port}//${_bucket}"
+      } else {
+        "${_type}://${_sftp_user}@[${_host.unwrap}]://${_bucket}"
+      }
     }
   }
 

@@ -121,6 +121,12 @@
 # @param restore_timer
 #   Default systemd timer for restore see: https://wiki.archlinux.de/title/Systemd/Timers
 #
+# @param sftp_port
+#   Default port for the SFTP repository. If the port is 22, this does not need to be filled in as Restic automatically uses this port
+#
+# @param sftp_user
+#   The user who connects to the SFTP repository
+#
 # @param type
 #   Default name for the Restic repository. Only S3 supported
 #
@@ -179,6 +185,8 @@ class restic (
   Optional[Variant[Array[String[1]],String[1]]] $restore_post_cmd     = undef,
   String[1]                                     $restore_snapshot     = 'latest',
   Optional[String[1]]                           $restore_timer        = undef,
+  Optional[String[1]]                           $sftp_port            = undef,
+  Optional[String[1]]                           $sftp_user            = undef,
   Restic::Repository::Type                      $type                 = 's3',
   String[1]                                     $user                 = 'root',
 ) {
