@@ -261,4 +261,111 @@ TESTS = {
       }
     }
   },
+  'one repo and init with sftp backend' => {
+    'repositories' => {
+      'initonly' => {
+        'type' => 'sftp',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => false,
+        'sftp_user' => 'some_sftp_user',
+        'host' => 'some_host_value',
+        'password' => 'some_password_value',
+      }
+    }
+  },
+  'one repo without init with sftp backend' => {
+    'repositories' => {
+      'nothing' => {
+        'type' => 'sftp',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => false,
+        'sftp_user' => 'some_sftp_user',
+        'sftp_port' => '2222',
+        'init_repo' => false,
+        'password' => 'some_password_value',
+      }
+    }
+  },
+  'backup and backup_timer with sftp backend' => {
+    'repositories' => {
+      'backup1' => {
+        'type' => 'sftp',
+        'backup_path' => '/home/rspec',
+        'backup_timer' => 'Sunday',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => true,
+        'sftp_user' => 'some_sftp_user',
+        'host' => 'some_host_value',
+        'password' => 'some_password_value',
+      }
+    }
+  },
+  'backup and backup_pre_cmd with sftp backend' => {
+    'repositories' => {
+      'backup2' => {
+        'type' => 'sftp',
+        'backup_path' => '/home/rspec',
+        'backup_timer' => 'Sunday',
+        'backup_pre_cmd' => 'touch foo bar',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => true,
+        'sftp_user' => 'some_sftp_user',
+        'host' => 'some_host_value',
+        'sftp_port' => '2222',
+        'password' => 'some_password_value',
+      }
+    }
+  },
+  'restore and restore_timer with sftp backend' => {
+    'repositories' => {
+      'restore1' => {
+        'type' => 'sftp',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => false,
+        'enable_restore' => true,
+        'sftp_user' => 'some_sftp_user',
+        'host' => 'some_host_value',
+        'password' => 'some_password_value',
+        'restore_path' => '/home/rspec',
+        'restore_timer' => 'Sunday',
+      }
+    }
+  },
+  'backup and restore and forget with sftp backend' => {
+    'repositories' => {
+      'backup3' => {
+        'type' => 'sftp',
+        'backup_path' => '/home/backup',
+        'backup_timer' => 'Monday',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => false,
+        'enable_forget' => true,
+        'enable_restore' => true,
+        'forget' => {
+          'keep-last' => 120,
+        },
+        'forget_timer' => 'forget_timer',
+        'sftp_user' => 'some_sftp_user',
+        'host' => 'some_host_value',
+        'sftp_port' => '2222',
+        'password' => 'some_password_value',
+        'restore_path' => '/home/restore',
+        'restore_timer' => 'Sunday',
+        'prune' => true,
+      }
+    }
+  },
+  'backup with sftp backend with backup_exit3_success => true' => {
+    'repositories' => {
+      'backup1' => {
+        'type' => 'sftp',
+        'backup_path' => '/home/backup',
+        'bucket' => 'some_bucket_value',
+        'sftp_user' => 'some_sftp_user',
+        'host' => 'some_host_value',
+        'password' => 'some_password_value',
+        'backup_exit3_success' => true,
+      }
+    }
+  },
 }.merge(cmd_tests).freeze

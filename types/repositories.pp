@@ -38,6 +38,8 @@ type Restic::Repositories = Hash[
       restore_pre_cmd      => Optional[Variant[Array[String[1]],String[1]]],
       restore_snapshot     => Optional[String[1]],
       restore_timer        => Optional[String[1]],
+      sftp_port            => Optional[String],
+      sftp_user            => Optional[String],
       type                 => Optional[Restic::Repository::Type],
       user                 => Optional[String[1]],
     }
