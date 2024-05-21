@@ -146,8 +146,8 @@ define restic::repository (
   Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd      = undef,
   Optional[String[1]]                           $restore_snapshot     = undef,
   Optional[String[1]]                           $restore_timer        = undef,
-  Optional[String]                              $sftp_port            = undef,
-  Optional[String]                              $sftp_user            = undef,
+  Optional[Variant[Sensitive[String],String]]   $sftp_port            = undef,
+  Optional[Variant[Sensitive[String],String]]   $sftp_user            = undef,
   Optional[Restic::Repository::Type]            $type                 = undef,
   Optional[String[1]]                           $user                 = undef,
 ) {
