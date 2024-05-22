@@ -106,6 +106,9 @@
 # @param sftp_user
 #   The user who connects to the SFTP repository
 #
+# @param sftp_repository
+#  The path to the repository on the SFTP server
+#
 # @param type
 #   Default name for the Restic repository. s3, gs and rest supported.
 #
