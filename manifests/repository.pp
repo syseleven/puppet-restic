@@ -147,6 +147,7 @@ define restic::repository (
   Optional[String[1]]                           $restore_snapshot     = undef,
   Optional[String[1]]                           $restore_timer        = undef,
   Optional[Variant[Sensitive[String],String]]   $sftp_port            = undef,
+  Optional[Variant[Sensitive[String],String]]   $sftp_repository      = undef,
   Optional[Variant[Sensitive[String],String]]   $sftp_user            = undef,
   Optional[Restic::Repository::Type]            $type                 = undef,
   Optional[String[1]]                           $user                 = undef,
@@ -187,6 +188,7 @@ define restic::repository (
   $_restore_snapshot     = pick($restore_snapshot, $restic::restore_snapshot)
   $_restore_timer        = $restore_timer.lest || { $restic::restore_timer }
   $_sftp_port            = $sftp_port.lest || { $restic::sftp_port }
+  $_sftp_repository      = $sftp_repository.lest || { $restic::sftp_repository }
   $_sftp_user            = $sftp_user.lest || { $restic::sftp_user }
   $_type                 = pick($type, $restic::type)
   $_user                 = pick($user, $restic::user)
@@ -213,18 +215,21 @@ define restic::repository (
     }
     'sftp': {
       if $_sftp_port {
-        "${_type}://${_sftp_user}@[${_host.unwrap}]:${_sftp_port}//${_bucket}"
+        "${_type}://${_sftp_user}@[${_host.unwrap}]:${_sftp_port}//${_sftp_repository}"
       } else {
-        "${_type}://${_sftp_user}@[${_host.unwrap}]://${_bucket}"
+        "${_type}://${_sftp_user}@[${_host.unwrap}]://${_sftp_repository}"
       }
     }
   }
 
   $repository = $_bucket ? {
-    undef   => "${_type}:${_host.unwrap}",
+    undef   => $_type ? {
+      'sftp'  => $repository_value,
+      default => "${_type}:${_host.unwrap}",
+    },
     default => $repository_value,
-  }
 
+  }
   $config_file   = "/etc/default/restic_${title}"
   $type_config   = $_type ? {
     's3'    => {

@@ -186,6 +186,7 @@ class restic (
   String[1]                                     $restore_snapshot     = 'latest',
   Optional[String[1]]                           $restore_timer        = undef,
   Optional[Variant[Sensitive[String],String]]   $sftp_port            = undef,
+  Optional[Variant[Sensitive[String],String]]   $sftp_repository      = undef,
   Optional[Variant[Sensitive[String],String]]   $sftp_user            = undef,
   Restic::Repository::Type                      $type                 = 's3',
   String[1]                                     $user                 = 'root',

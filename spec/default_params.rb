@@ -39,6 +39,7 @@ DEFAULTS = {
   'restore_snapshot'     => 'latest',
   'restore_timer'        => :undef,
   'sftp_port'            => :undef,
+  'sftp_repository'      => :undef,
   'sftp_user'            => :undef,
   'user'                 => 'root',
   'type'                 => 's3',

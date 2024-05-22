@@ -20,6 +20,7 @@ shared_examples 'repository' do |title, config, params|
   bucket = values['bucket']
   gcs_repository = values['gcs_repository']
   sftp_port = values['sftp_port']
+  sftp_repository = values['sftp_repository']
   sftp_user = values['sftp_user']
 
   success_exit_status = values['backup_exit3_success'] ? 3 : :undef
@@ -28,9 +29,9 @@ shared_examples 'repository' do |title, config, params|
                  "#{type}:#{bucket}:/#{gcs_repository}"
                when 'sftp'
                  if sftp_port && sftp_port != :undef
-                   "#{type}://#{sftp_user}@[#{host}]:#{sftp_port}//#{bucket}"
+                   "#{type}://#{sftp_user}@[#{host}]:#{sftp_port}//#{sftp_repository}"
                  else
-                   "#{type}://#{sftp_user}@[#{host}]://#{bucket}"
+                   "#{type}://#{sftp_user}@[#{host}]://#{sftp_repository}"
                  end
                else
                  bucket == :undef ? "#{type}:#{host}" : "#{type}:#{host}/#{bucket}"
