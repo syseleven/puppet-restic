@@ -209,9 +209,13 @@ define restic::repository (
     default => undef,
   }
 
-  $repository_value = case $_type {
+  $repository = case $_type {
     default: {
-      "${_type}:${_host.unwrap}/${_bucket}"
+      if $_bucket {
+        "${_type}:${_host.unwrap}/${_bucket}"
+      } else {
+        "${_type}:${_host.unwrap}"
+      }
     }
     'gs': {
       "${_type}:${_bucket}:/${_gcs_repository}"
@@ -225,14 +229,6 @@ define restic::repository (
     }
   }
 
-  $repository = $_bucket ? {
-    undef   => $_type ? {
-      'sftp'  => $repository_value,
-      default => "${_type}:${_host.unwrap}",
-    },
-    default => $repository_value,
-
-  }
   $config_file   = "/etc/default/restic_${title}"
   $type_config   = $_type ? {
     's3'    => {
