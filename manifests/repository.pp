@@ -210,13 +210,6 @@ define restic::repository (
   }
 
   $repository = case $_type {
-    default: {
-      if $_bucket {
-        "${_type}:${_host.unwrap}/${_bucket}"
-      } else {
-        "${_type}:${_host.unwrap}"
-      }
-    }
     'gs': {
       "${_type}:${_bucket}:/${_gcs_repository}"
     }
@@ -225,6 +218,13 @@ define restic::repository (
         "${_type}://${_sftp_user}@[${_host.unwrap}]:${_sftp_port}//${_sftp_repository}"
       } else {
         "${_type}://${_sftp_user}@[${_host.unwrap}]://${_sftp_repository}"
+      }
+    }
+    default: {
+      if $_bucket {
+        "${_type}:${_host.unwrap}/${_bucket}"
+      } else {
+        "${_type}:${_host.unwrap}"
       }
     }
   }
