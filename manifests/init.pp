@@ -131,7 +131,7 @@
 #   The user who connects to the SFTP repository
 #
 # @param type
-#   Default name for the Restic repository.
+#   Default name for the Restic repository. s3, gs, rest and sftp are supported.
 #
 # @param user
 #   Default user for systemd services

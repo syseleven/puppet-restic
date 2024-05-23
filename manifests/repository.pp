@@ -101,16 +101,16 @@
 #   Default systemd timer for restore see: https://wiki.archlinux.de/title/Systemd/Timers
 #
 # @param sftp_port
-#   Default port for the SFTP repository. If the port is 22, this does not need to be filled in as Restic automatically uses this port
-#
-# @param sftp_user
-#   The user who connects to the SFTP repository
+#   The port used to connect with sft. If the port is 22, this does not need to be filled in as Restic automatically uses this port
 #
 # @param sftp_repository
 #  The path to the repository on the SFTP server
 #
+# @param sftp_user
+#   The user who connects to the SFTP repository
+#
 # @param type
-#   Default name for the Restic repository. s3, gs and rest supported.
+#   Default name for the Restic repository. s3, gs, rest and sftp are supported.
 #
 # @param user
 #   Default user for systemd services
