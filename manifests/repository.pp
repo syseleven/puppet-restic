@@ -267,72 +267,78 @@ define restic::repository (
   ##
   ## backup service
   ##
-  $backup_commands = [
-    $_backup_pre_cmd,
-    "${_binary} backup \$GLOBAL_FLAGS \$BACKUP_FLAGS",
-    $_backup_post_cmd,
-  ].flatten.delete_undef_values
 
-  $backup_keys = {
-    'BACKUP_FLAGS' => [ $_backup_flags, $_backup_path, ].flatten.join(' '),
+  if $_enable_backup {
+    $backup_commands = [
+      $_backup_pre_cmd,
+      "${_binary} backup \$GLOBAL_FLAGS \$BACKUP_FLAGS",
+      $_backup_post_cmd,
+    ].flatten.delete_undef_values
+
+    $backup_keys = {
+      'BACKUP_FLAGS' => [ $_backup_flags, $_backup_path, ].flatten.join(' '),
+    }
+
+    restic::service { "restic_backup_${title}":
+      commands            => $backup_commands.delete_undef_values,
+      config              => $config_file,
+      configs             => $backup_keys,
+      enable              => $_enable_backup,
+      group               => $_group,
+      timer               => $_backup_timer,
+      success_exit_status => $success_exit_status,
+      user                => $_user,
+    }
   }
-
-  restic::service { "restic_backup_${title}":
-    commands            => $backup_commands.delete_undef_values,
-    config              => $config_file,
-    configs             => $backup_keys,
-    enable              => $_enable_backup,
-    group               => $_group,
-    timer               => $_backup_timer,
-    success_exit_status => $success_exit_status,
-    user                => $_user,
-  }
-
   ##
   ## forget service
   ##
-  $forget_commands = [
-    $_forget_pre_cmd,
-    "${_binary} forget \$GLOBAL_FLAGS \$FORGET_FLAGS",
-    $_forget_post_cmd,
-  ].flatten.delete_undef_values
 
-  $forgets       = $_forget.map |$k,$v| { "--${k} ${v}" }
-  $forget_prune  = if $_prune { '--prune' } else { undef }
-  $forget_keys   = {
-    'FORGET_FLAGS' => [ $forgets, $forget_prune, $_forget_flags, ].delete_undef_values.flatten.join(' '),
+  if $_enable_forget {
+    $forget_commands = [
+      $_forget_pre_cmd,
+      "${_binary} forget \$GLOBAL_FLAGS \$FORGET_FLAGS",
+      $_forget_post_cmd,
+    ].flatten.delete_undef_values
+
+    $forgets       = $_forget.map |$k,$v| { "--${k} ${v}" }
+    $forget_prune  = if $_prune { '--prune' } else { undef }
+    $forget_keys   = {
+      'FORGET_FLAGS' => [ $forgets, $forget_prune, $_forget_flags, ].delete_undef_values.flatten.join(' '),
+    }
+
+    restic::service { "restic_forget_${title}":
+      commands => $forget_commands.delete_undef_values,
+      config   => $config_file,
+      configs  => $forget_keys,
+      enable   => $_enable_forget,
+      group    => $_group,
+      timer    => $_forget_timer,
+      user     => $_user,
+    }
   }
-
-  restic::service { "restic_forget_${title}":
-    commands => $forget_commands.delete_undef_values,
-    config   => $config_file,
-    configs  => $forget_keys,
-    enable   => $_enable_forget,
-    group    => $_group,
-    timer    => $_forget_timer,
-    user     => $_user,
-  }
-
   ##
   ## restore service
   ##
-  $restore_commands = [
-    $_restore_pre_cmd,
-    "${_binary} restore \$GLOBAL_FLAGS \$RESTORE_FLAGS",
-    $_restore_post_cmd,
-  ].flatten.delete_undef_values
+  if $_enable_restore {
+    $restore_commands = [
+      $_restore_pre_cmd,
+      "${_binary} restore \$GLOBAL_FLAGS \$RESTORE_FLAGS",
+      $_restore_post_cmd,
+    ].flatten.delete_undef_values
 
-  $restore_keys = {
-    'RESTORE_FLAGS' => [ "-t ${_restore_path}", $_restore_flags, $_restore_snapshot, ].flatten.join(' '),
-  }
+    $restore_keys = {
+      'RESTORE_FLAGS' => [ "-t ${_restore_path}", $_restore_flags, $_restore_snapshot, ].flatten.join(' '),
+    }
 
-  restic::service { "restic_restore_${title}":
-    commands => $restore_commands.delete_undef_values,
-    config   => $config_file,
-    configs  => $restore_keys,
-    enable   => $_enable_restore,
-    group    => $_group,
-    timer    => $_restore_timer,
-    user     => $_user,
+    restic::service { "restic_restore_${title}":
+      commands => $restore_commands.delete_undef_values,
+      config   => $config_file,
+      configs  => $restore_keys,
+      enable   => $_enable_restore,
+      group    => $_group,
+      timer    => $_restore_timer,
+      user     => $_user,
+    }
   }
 }
