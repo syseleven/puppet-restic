@@ -24,6 +24,8 @@ shared_examples 'repository' do |title, config, params|
   repository = case type
                when 'gs'
                  "#{type}:#{bucket}:/#{gcs_repository}"
+               when 'sftp'
+                 "#{type}://#{host}:/#{bucket}"
                else
                  bucket == :undef ? "#{type}:#{host}" : "#{type}:#{host}/#{bucket}"
                end

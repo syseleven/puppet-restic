@@ -198,6 +198,9 @@ define restic::repository (
     'gs': {
       "${_type}:${_bucket}:/${_gcs_repository}"
     }
+    'sftp': {
+      "${_type}://${_host.unwrap}/${_bucket}"
+    }
     default: {
       "${_type}:${_host.unwrap}/${_bucket}"
     }
