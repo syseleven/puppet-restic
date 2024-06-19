@@ -73,6 +73,9 @@
 # @param global_flags
 #   Default global flags for `restic <flags>`. See `restic --help`
 #
+# @param max_cpus
+#   Limit the number of CPU cores restic can use by setting the env variable GOMAXPROCS
+#
 # @param gcs_credentials_path
 #   Default path to the file containing the Google Cloud service account credentials which allows access to the bucket. Need to be downloaded from Google Cloud see: https://cloud.google.com/iam/docs/service-account-creds
 #
@@ -163,6 +166,7 @@ class restic (
   Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd      = undef,
   Optional[String[1]]                           $forget_timer         = undef,
   Variant[Array[String[1]],String[1]]           $global_flags         = [],
+  Optional[Integer[1]]                          $max_cpus             = undef,
   Optional[Stdlib::Absolutepath]                $gcs_credentials_path = undef,
   Optional[Variant[Sensitive[String],String]]   $gcs_project_id       = undef,
   Optional[Variant[Sensitive[String],String]]   $gcs_repository       = undef,

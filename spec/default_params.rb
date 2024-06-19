@@ -22,6 +22,7 @@ DEFAULTS = {
   'forget_post_cmd'      => :undef,
   'forget_timer'         => :undef,
   'global_flags'         => [],
+  'max_cpus'             => :undef,
   'gcs_credentials_path' => :undef,
   'gcs_project_id'       => :undef,
   'gcs_repository'       => :undef,
