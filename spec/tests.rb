@@ -73,6 +73,21 @@ TESTS = {
       }
     }
   },
+  'backup and backup_timer and backup_timer_random_delay' => {
+    'repositories' => {
+      'backup1' => {
+        'backup_path' => '/home/rspec',
+        'backup_timer' => 'Sunday',
+        'backup_timer_random_delay' => '6h',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => true,
+        'host' => 'some_host_value',
+        'id' => 'some_id_value',
+        'key' => 'some_key_value',
+        'password' => 'some_password_value',
+      }
+    }
+  },
   'backup and backup_pre_cmd' => {
     'repositories' => {
       'backup2' => {
@@ -115,6 +130,22 @@ TESTS = {
         'password' => 'some_password_value',
         'restore_path' => '/home/rspec',
         'restore_timer' => 'Sunday',
+      }
+    }
+  },
+  'restore and restore_timer and restore_timer_random_delay' => {
+    'repositories' => {
+      'restore1' => {
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => false,
+        'enable_restore' => true,
+        'host' => 'some_host_value',
+        'id' => 'some_id_value',
+        'key' => 'some_key_value',
+        'password' => 'some_password_value',
+        'restore_path' => '/home/rspec',
+        'restore_timer' => 'Sunday',
+        'restore_timer_random_delay' => 60,
       }
     }
   },

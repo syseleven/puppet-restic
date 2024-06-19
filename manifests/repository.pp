@@ -16,6 +16,9 @@
 # @param backup_timer
 #   Default systemd timer for backup see: https://wiki.archlinux.de/title/Systemd/Timers
 #
+# @param backup_timer_random_delay
+#   Delay the timer by a random amount of time to avoid multiple hosts running at the same time see: https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html#RandomizedDelaySec=
+#
 # @param backup_exit3_success
 #   Consider restic's exit code 3 as success. https://restic.readthedocs.io/en/latest/040_backup.html#exit-status-codes
 #
@@ -48,6 +51,9 @@
 #
 # @param forget_timer
 #   Default systemd timer for forget see: https://wiki.archlinux.de/title/Systemd/Timers
+#
+# @param forget_timer_random_delay
+#   Delay the timer by a random amount of time to avoid multiple hosts running at the same time see: https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html#RandomizedDelaySec=
 #
 # @param global_flags
 #   Default global flags for `restic <flags>`. See `restic --help`
@@ -112,6 +118,9 @@
 # @param sftp_user
 #   The user who connects to the SFTP repository
 #
+# @param restore_timer_random_delay
+#   Delay the timer by a random amount of time to avoid multiple hosts running at the same time see: https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html#RandomizedDelaySec=
+#
 # @param type
 #   Default name for the Restic repository. s3, gs, rest and sftp are supported.
 #
@@ -119,87 +128,93 @@
 #   Default user for systemd services
 #
 define restic::repository (
-  Optional[Boolean]                             $backup_exit3_success = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $backup_flags         = undef,
-  Optional[Restic::Path]                        $backup_path          = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $backup_post_cmd      = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $backup_pre_cmd       = undef,
-  Optional[String[1]]                           $backup_timer         = undef,
-  Optional[Stdlib::Absolutepath]                $binary               = undef,
-  Optional[String]                              $bucket               = undef,
-  Optional[Boolean]                             $enable_backup        = undef,
-  Optional[Boolean]                             $enable_forget        = undef,
-  Optional[Boolean]                             $enable_restore       = undef,
-  Optional[Restic::Forget]                      $forget               = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $forget_flags         = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $forget_pre_cmd       = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd      = undef,
-  Optional[String[1]]                           $forget_timer         = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $global_flags         = undef,
-  Optional[Integer[1]]                          $max_cpus             = undef,
-  Optional[Stdlib::Absolutepath]                $gcs_credentials_path = undef,
-  Optional[Variant[Sensitive[String],String]]   $gcs_repository       = undef,
-  Optional[Variant[Sensitive[String],String]]   $gcs_project_id       = undef,
-  Optional[String]                              $group                = undef,
-  Optional[Variant[Sensitive[String],String]]   $host                 = undef,
-  Optional[Variant[Sensitive[String],String]]   $id                   = undef,
-  Optional[Boolean]                             $init_repo            = undef,
-  Optional[Variant[Sensitive[String],String]]   $key                  = undef,
-  Optional[Variant[Sensitive[String],String]]   $password             = undef,
-  Optional[Boolean]                             $prune                = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $restore_flags        = undef,
-  Optional[Stdlib::Absolutepath]                $restore_path         = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $restore_post_cmd     = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd      = undef,
-  Optional[String[1]]                           $restore_snapshot     = undef,
-  Optional[String[1]]                           $restore_timer        = undef,
-  Optional[Variant[Sensitive[String],String]]   $sftp_port            = undef,
-  Optional[Variant[Sensitive[String],String]]   $sftp_repository      = undef,
-  Optional[Variant[Sensitive[String],String]]   $sftp_user            = undef,
-  Optional[Restic::Repository::Type]            $type                 = undef,
-  Optional[String[1]]                           $user                 = undef,
+  Optional[Boolean]                             $backup_exit3_success       = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $backup_flags               = undef,
+  Optional[Restic::Path]                        $backup_path                = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $backup_post_cmd            = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $backup_pre_cmd             = undef,
+  Optional[String[1]]                           $backup_timer               = undef,
+  Optional[Variant[String[1], Integer]]         $backup_timer_random_delay  = undef,
+  Optional[Stdlib::Absolutepath]                $binary                     = undef,
+  Optional[String]                              $bucket                     = undef,
+  Optional[Boolean]                             $enable_backup              = undef,
+  Optional[Boolean]                             $enable_forget              = undef,
+  Optional[Boolean]                             $enable_restore             = undef,
+  Optional[Restic::Forget]                      $forget                     = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $forget_flags               = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $forget_pre_cmd             = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd            = undef,
+  Optional[String[1]]                           $forget_timer               = undef,
+  Optional[Variant[String[1], Integer]]         $forget_timer_random_delay  = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $global_flags               = undef,
+  Optional[Integer[1]]                          $max_cpus                   = undef,
+  Optional[Stdlib::Absolutepath]                $gcs_credentials_path       = undef,
+  Optional[Variant[Sensitive[String],String]]   $gcs_repository             = undef,
+  Optional[Variant[Sensitive[String],String]]   $gcs_project_id             = undef,
+  Optional[String]                              $group                      = undef,
+  Optional[Variant[Sensitive[String],String]]   $host                       = undef,
+  Optional[Variant[Sensitive[String],String]]   $id                         = undef,
+  Optional[Boolean]                             $init_repo                  = undef,
+  Optional[Variant[Sensitive[String],String]]   $key                        = undef,
+  Optional[Variant[Sensitive[String],String]]   $password                   = undef,
+  Optional[Boolean]                             $prune                      = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $restore_flags              = undef,
+  Optional[Stdlib::Absolutepath]                $restore_path               = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $restore_post_cmd           = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd            = undef,
+  Optional[String[1]]                           $restore_snapshot           = undef,
+  Optional[String[1]]                           $restore_timer              = undef,
+  Optional[Variant[String[1], Integer]]         $restore_timer_random_delay = undef,
+  Optional[Variant[Sensitive[String],String]]   $sftp_port                  = undef,
+  Optional[Variant[Sensitive[String],String]]   $sftp_repository            = undef,
+  Optional[Variant[Sensitive[String],String]]   $sftp_user                  = undef,
+  Optional[Restic::Repository::Type]            $type                       = undef,
+  Optional[String[1]]                           $user                       = undef,
 ) {
   include restic
 
-  $_backup_exit3_success = pick($backup_exit3_success, $restic::backup_exit3_success)
-  $_backup_flags         = pick($backup_flags, $restic::backup_flags)
-  $_backup_path          = $backup_path.lest || { $restic::backup_path }
-  $_backup_post_cmd      = $backup_post_cmd.lest || { $restic::backup_post_cmd }
-  $_backup_pre_cmd       = $backup_pre_cmd.lest || { $restic::backup_pre_cmd }
-  $_backup_timer         = $backup_timer.lest || { $restic::backup_timer }
-  $_binary               = pick($binary, $restic::binary)
-  $_bucket               = $bucket.lest || { $restic::bucket }
-  $_enable_backup        = pick($enable_backup, $restic::enable_backup)
-  $_enable_forget        = pick($enable_forget, $restic::enable_forget)
-  $_enable_restore       = pick($enable_restore, $restic::enable_restore)
-  $_forget               = pick($forget, $restic::forget)
-  $_forget_flags         = pick($forget_flags, $restic::forget_flags)
-  $_forget_post_cmd      = $forget_post_cmd.lest || { $restic::forget_post_cmd }
-  $_forget_pre_cmd       = $forget_pre_cmd.lest || { $restic::forget_pre_cmd }
-  $_forget_timer         = $forget_timer.lest || { $restic::forget_timer }
-  $_global_flags         = pick($global_flags, $restic::global_flags)
-  $_max_cpus             = $max_cpus.lest || { $restic::max_cpus }
-  $_gcs_credentials_path = $gcs_credentials_path.lest || { $restic::gcs_credentials_path }
-  $_gcs_project_id       = $gcs_project_id.lest || { $restic::gcs_project_id }
-  $_gcs_repository       = $gcs_repository.lest || { $restic::gcs_repository }
-  $_group                = pick($group, $restic::group)
-  $_host                 = $host.lest || { $restic::host }
-  $_id                   = $id.lest || { $restic::id }
-  $_init_repo            = pick($init_repo, $restic::init_repo)
-  $_key                  = $key.lest || { $restic::key }
-  $_password             = pick($password, $restic::password)
-  $_prune                = pick($prune, $restic::prune)
-  $_restore_flags        = pick($restore_flags, $restic::restore_flags)
-  $_restore_path         = $restore_path.lest || { $restic::restore_path }
-  $_restore_post_cmd     = $restore_post_cmd.lest || { $restic::restore_post_cmd }
-  $_restore_pre_cmd      = $restore_pre_cmd.lest || { $restic::restore_pre_cmd }
-  $_restore_snapshot     = pick($restore_snapshot, $restic::restore_snapshot)
-  $_restore_timer        = $restore_timer.lest || { $restic::restore_timer }
-  $_sftp_port            = $sftp_port.lest || { $restic::sftp_port }
-  $_sftp_repository      = $sftp_repository.lest || { $restic::sftp_repository }
-  $_sftp_user            = $sftp_user.lest || { $restic::sftp_user }
-  $_type                 = pick($type, $restic::type)
-  $_user                 = pick($user, $restic::user)
+  $_backup_exit3_success       = pick($backup_exit3_success, $restic::backup_exit3_success)
+  $_backup_flags               = pick($backup_flags, $restic::backup_flags)
+  $_backup_path                = $backup_path.lest || { $restic::backup_path }
+  $_backup_post_cmd            = $backup_post_cmd.lest || { $restic::backup_post_cmd }
+  $_backup_pre_cmd             = $backup_pre_cmd.lest || { $restic::backup_pre_cmd }
+  $_backup_timer               = $backup_timer.lest || { $restic::backup_timer }
+  $_backup_timer_random_delay  = $backup_timer_random_delay.lest || { $restic::backup_timer_random_delay }
+  $_binary                     = pick($binary, $restic::binary)
+  $_bucket                     = $bucket.lest || { $restic::bucket }
+  $_enable_backup              = pick($enable_backup, $restic::enable_backup)
+  $_enable_forget              = pick($enable_forget, $restic::enable_forget)
+  $_enable_restore             = pick($enable_restore, $restic::enable_restore)
+  $_forget                     = pick($forget, $restic::forget)
+  $_forget_flags               = pick($forget_flags, $restic::forget_flags)
+  $_forget_post_cmd            = $forget_post_cmd.lest || { $restic::forget_post_cmd }
+  $_forget_pre_cmd             = $forget_pre_cmd.lest || { $restic::forget_pre_cmd }
+  $_forget_timer               = $forget_timer.lest || { $restic::forget_timer }
+  $_forget_timer_random_delay  = $forget_timer_random_delay.lest || { $restic::forget_timer_random_delay }
+  $_global_flags               = pick($global_flags, $restic::global_flags)
+  $_max_cpus                   = $max_cpus.lest || { $restic::max_cpus }
+  $_gcs_credentials_path       = $gcs_credentials_path.lest || { $restic::gcs_credentials_path }
+  $_gcs_project_id             = $gcs_project_id.lest || { $restic::gcs_project_id }
+  $_gcs_repository             = $gcs_repository.lest || { $restic::gcs_repository }
+  $_group                      = pick($group, $restic::group)
+  $_host                       = $host.lest || { $restic::host }
+  $_id                         = $id.lest || { $restic::id }
+  $_init_repo                  = pick($init_repo, $restic::init_repo)
+  $_key                        = $key.lest || { $restic::key }
+  $_password                   = pick($password, $restic::password)
+  $_prune                      = pick($prune, $restic::prune)
+  $_restore_flags              = pick($restore_flags, $restic::restore_flags)
+  $_restore_path               = $restore_path.lest || { $restic::restore_path }
+  $_restore_post_cmd           = $restore_post_cmd.lest || { $restic::restore_post_cmd }
+  $_restore_pre_cmd            = $restore_pre_cmd.lest || { $restic::restore_pre_cmd }
+  $_restore_snapshot           = pick($restore_snapshot, $restic::restore_snapshot)
+  $_restore_timer              = $restore_timer.lest || { $restic::restore_timer }
+  $_sftp_port                  = $sftp_port.lest || { $restic::sftp_port }
+  $_sftp_repository            = $sftp_repository.lest || { $restic::sftp_repository }
+  $_sftp_user                  = $sftp_user.lest || { $restic::sftp_user }
+  $_restore_timer_random_delay = $restore_timer_random_delay.lest || { $restic::restore_timer_random_delay }
+  $_type                       = pick($type, $restic::type)
+  $_user                       = pick($user, $restic::user)
 
   if $_enable_backup and $_backup_path == undef {
     fail("restic::repository[${title}]: You have to set \$backup_path if you enable the backup!")
@@ -319,6 +334,7 @@ define restic::repository (
       enable              => $_enable_backup,
       group               => $_group,
       timer               => $_backup_timer,
+      timer_random_delay  => $_backup_timer_random_delay,
       success_exit_status => $success_exit_status,
       user                => $_user,
     }
@@ -341,13 +357,14 @@ define restic::repository (
     }
 
     restic::service { "restic_forget_${title}":
-      commands => $forget_commands.delete_undef_values,
-      config   => $config_file,
-      configs  => $forget_keys,
-      enable   => $_enable_forget,
-      group    => $_group,
-      timer    => $_forget_timer,
-      user     => $_user,
+      commands           => $forget_commands.delete_undef_values,
+      config             => $config_file,
+      configs            => $forget_keys,
+      enable             => $_enable_forget,
+      group              => $_group,
+      timer              => $_forget_timer,
+      timer_random_delay => $_forget_timer_random_delay,
+      user               => $_user,
     }
   }
 
@@ -366,13 +383,14 @@ define restic::repository (
     }
 
     restic::service { "restic_restore_${title}":
-      commands => $restore_commands.delete_undef_values,
-      config   => $config_file,
-      configs  => $restore_keys,
-      enable   => $_enable_restore,
-      group    => $_group,
-      timer    => $_restore_timer,
-      user     => $_user,
+      commands           => $restore_commands.delete_undef_values,
+      config             => $config_file,
+      configs            => $restore_keys,
+      enable             => $_enable_restore,
+      group              => $_group,
+      timer              => $_restore_timer,
+      timer_random_delay => $_restore_timer_random_delay,
+      user               => $_user,
     }
   }
 }

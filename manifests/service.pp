@@ -11,6 +11,7 @@ define restic::service (
   $group,
   $user,
   $timer,
+  $timer_random_delay = undef,
   $success_exit_status = undef,
 ) {
   assert_private()
@@ -81,7 +82,7 @@ define restic::service (
   }
 
   $timer_content = $timer ? {
-    String => epp("${module_name}/restic.timer.epp", { timer => $timer, }),
+    String => epp("${module_name}/restic.timer.epp", { timer => $timer, timer_random_delay => $timer_random_delay }),
     Undef  => undef,
   }
 

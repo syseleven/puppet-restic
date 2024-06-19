@@ -132,7 +132,7 @@ shared_examples 'repository' do |title, config, params|
     'BACKUP_FLAGS' => backup_config.join(' '),
   }
 
-  include_examples 'service', "restic_backup_#{title}", backup_commands, config_file, backup_keys, values['enable_backup'], values['group'], values['user'], values['backup_timer'], success_exit_status
+  include_examples 'service', "restic_backup_#{title}", backup_commands, config_file, backup_keys, values['enable_backup'], values['group'], values['user'], values['backup_timer'], values['backup_timer_random_delay'], success_exit_status
 
   ##
   ## forget service
@@ -159,7 +159,7 @@ shared_examples 'repository' do |title, config, params|
     'FORGET_FLAGS' => forget_config.join(' '),
   }
 
-  include_examples 'service', "restic_forget_#{title}", forget_commands, config_file, forget_keys, values['enable_forget'], values['group'], values['user'], values['forget_timer']
+  include_examples 'service', "restic_forget_#{title}", forget_commands, config_file, forget_keys, values['enable_forget'], values['group'], values['user'], values['forget_timer'], values['forget_timer_random_delay']
 
   ##
   ## restore service
@@ -184,5 +184,5 @@ shared_examples 'repository' do |title, config, params|
     'RESTORE_FLAGS' => restore_config.join(' '),
   }
 
-  include_examples 'service', "restic_restore_#{title}", restore_commands, config_file, restore_keys, values['enable_restore'], values['group'], values['user'], values['restore_timer']
+  include_examples 'service', "restic_restore_#{title}", restore_commands, config_file, restore_keys, values['enable_restore'], values['group'], values['user'], values['restore_timer'], values['restore_timer_random_delay']
 end
