@@ -48,6 +48,7 @@ restic::enable_backup: true
 restic::enable_forget: true
 restic::backup_timer: 'Mon..Sun *:00:00'
 restic::forget_timer: Mon..Sun 23:00:00
+restic::forget_timer_random_delay: 6h
 restic::host: 'host.name'
 restic::id: 's3id'
 restic::key: 's3key'

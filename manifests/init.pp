@@ -37,6 +37,9 @@
 # @param backup_timer
 #   Default systemd timer for backup see: https://wiki.archlinux.de/title/Systemd/Timers
 #
+# @param backup_timer_random_delay
+#   Delay the timer by a random amount of time to avoid multiple hosts running at the same time see: https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html#RandomizedDelaySec=
+#
 # @param backup_exit3_success
 #   Consider restic's exit code 3 as success. https://restic.readthedocs.io/en/latest/040_backup.html#exit-status-codes
 #
@@ -69,6 +72,9 @@
 #
 # @param forget_timer
 #   Default systemd timer for forget see: https://wiki.archlinux.de/title/Systemd/Timers
+#
+# @param forget_timer_random_delay
+#   Delay the timer by a random amount of time to avoid multiple hosts running at the same time see: https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html#RandomizedDelaySec=
 #
 # @param global_flags
 #   Default global flags for `restic <flags>`. See `restic --help`
@@ -121,6 +127,9 @@
 # @param restore_timer
 #   Default systemd timer for restore see: https://wiki.archlinux.de/title/Systemd/Timers
 #
+# @param restore_timer_random_delay
+#   Delay the timer by a random amount of time to avoid multiple hosts running at the same time see: https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html#RandomizedDelaySec=
+#
 # @param type
 #   Default name for the Restic repository. Only S3 supported
 #
@@ -146,41 +155,44 @@ class restic (
   ##
   ## default values for restic::repositories
   ##
-  Variant[Array[String[1]],String[1]]           $backup_flags         = [],
-  Optional[Restic::Path]                        $backup_path          = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $backup_pre_cmd       = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $backup_post_cmd      = undef,
-  Optional[String[1]]                           $backup_timer         = undef,
-  Boolean                                       $backup_exit3_success = false,
-  Stdlib::Absolutepath                          $binary               = '/usr/bin/restic',
-  Optional[String]                              $bucket               = undef,
-  Boolean                                       $enable_backup        = true,
-  Boolean                                       $enable_forget        = false,
-  Boolean                                       $enable_restore       = false,
-  Restic::Forget                                $forget               = {},
-  Variant[Array[String[1]],String[1]]           $forget_flags         = [],
-  Optional[Variant[Array[String[1]],String[1]]] $forget_pre_cmd       = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd      = undef,
-  Optional[String[1]]                           $forget_timer         = undef,
-  Variant[Array[String[1]],String[1]]           $global_flags         = [],
-  Optional[Stdlib::Absolutepath]                $gcs_credentials_path = undef,
-  Optional[Variant[Sensitive[String],String]]   $gcs_project_id       = undef,
-  Optional[Variant[Sensitive[String],String]]   $gcs_repository       = undef,
-  String                                        $group                = 'root',
-  Optional[Variant[Sensitive[String],String]]   $host                 = undef,
-  Optional[Variant[Sensitive[String],String]]   $id                   = undef,
-  Boolean                                       $init_repo            = true,
-  Optional[Variant[Sensitive[String],String]]   $key                  = undef,
-  Optional[Variant[Sensitive[String],String]]   $password             = undef,
-  Boolean                                       $prune                = false,
-  Variant[Array[String[1]],String[1]]           $restore_flags        = [],
-  Optional[Stdlib::Absolutepath]                $restore_path         = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd      = undef,
-  Optional[Variant[Array[String[1]],String[1]]] $restore_post_cmd     = undef,
-  String[1]                                     $restore_snapshot     = 'latest',
-  Optional[String[1]]                           $restore_timer        = undef,
-  Restic::Repository::Type                      $type                 = 's3',
-  String[1]                                     $user                 = 'root',
+  Variant[Array[String[1]],String[1]]           $backup_flags               = [],
+  Optional[Restic::Path]                        $backup_path                = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $backup_pre_cmd             = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $backup_post_cmd            = undef,
+  Optional[String[1]]                           $backup_timer               = undef,
+  Optional[Variant[String[1], Integer]]         $backup_timer_random_delay  = undef,
+  Boolean                                       $backup_exit3_success       = false,
+  Stdlib::Absolutepath                          $binary                     = '/usr/bin/restic',
+  Optional[String]                              $bucket                     = undef,
+  Boolean                                       $enable_backup              = true,
+  Boolean                                       $enable_forget              = false,
+  Boolean                                       $enable_restore             = false,
+  Restic::Forget                                $forget                     = {},
+  Variant[Array[String[1]],String[1]]           $forget_flags               = [],
+  Optional[Variant[Array[String[1]],String[1]]] $forget_pre_cmd             = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd            = undef,
+  Optional[String[1]]                           $forget_timer               = undef,
+  Optional[Variant[String[1], Integer]]         $forget_timer_random_delay  = undef,
+  Variant[Array[String[1]],String[1]]           $global_flags               = [],
+  Optional[Stdlib::Absolutepath]                $gcs_credentials_path       = undef,
+  Optional[Variant[Sensitive[String],String]]   $gcs_project_id             = undef,
+  Optional[Variant[Sensitive[String],String]]   $gcs_repository             = undef,
+  String                                        $group                      = 'root',
+  Optional[Variant[Sensitive[String],String]]   $host                       = undef,
+  Optional[Variant[Sensitive[String],String]]   $id                         = undef,
+  Boolean                                       $init_repo                  = true,
+  Optional[Variant[Sensitive[String],String]]   $key                        = undef,
+  Optional[Variant[Sensitive[String],String]]   $password                   = undef,
+  Boolean                                       $prune                      = false,
+  Variant[Array[String[1]],String[1]]           $restore_flags              = [],
+  Optional[Stdlib::Absolutepath]                $restore_path               = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd            = undef,
+  Optional[Variant[Array[String[1]],String[1]]] $restore_post_cmd           = undef,
+  String[1]                                     $restore_snapshot           = 'latest',
+  Optional[String[1]]                           $restore_timer              = undef,
+  Optional[Variant[String[1], Integer]]         $restore_timer_random_delay = undef,
+  Restic::Repository::Type                      $type                       = 's3',
+  String[1]                                     $user                       = 'root',
 ) {
   contain restic::package
   contain restic::reload

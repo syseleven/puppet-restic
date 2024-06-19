@@ -1,5 +1,12 @@
 <%- |
     String $timer,
+    Optional[Variant[String, Integer]] $timer_random_delay = undef,
 | -%>
 [Timer]
 OnCalendar=<%= $timer %>
+<% if $timer_random_delay != undef { -%>
+RandomizedDelaySec=<%= $timer_random_delay %>
+<% } -%>
+
+[Install]
+WantedBy=timers.target
