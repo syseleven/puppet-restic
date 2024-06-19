@@ -22,6 +22,7 @@ type Restic::Repositories = Hash[
       forget_pre_cmd       => Optional[Variant[Array[String[1]],String[1]]],
       forget_timer         => Optional[String[1]],
       global_flags         => Optional[Variant[Array[String[1]],String[1]]],
+      max_cpus             => Optional[Integer[1]],
       gcs_credentials_path => Optional[Stdlib::Absolutepath],
       gcs_project_id       => Optional[Variant[Sensitive[String],String]],
       gcs_repository       => Optional[Variant[Sensitive[String],String]],

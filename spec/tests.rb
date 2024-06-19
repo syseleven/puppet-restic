@@ -88,6 +88,21 @@ TESTS = {
       }
     }
   },
+  'backup and backup_timer and max_cpus' => {
+    'repositories' => {
+      'backup1' => {
+        'backup_path' => '/home/rspec',
+        'backup_timer' => 'Sunday',
+        'bucket' => 'some_bucket_value',
+        'enable_backup' => true,
+        'host' => 'some_host_value',
+        'id' => 'some_id_value',
+        'key' => 'some_key_value',
+        'password' => 'some_password_value',
+        'max_cpus' => 3,
+      }
+    }
+  },
   'restore and restore_timer' => {
     'repositories' => {
       'restore1' => {

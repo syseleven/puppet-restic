@@ -82,17 +82,20 @@ shared_examples 'repository' do |title, config, params|
 
     config_keys = {
       'GLOBAL_FLAGS' => [ values['global_flags'] ].flatten.join(' '),
+      'GOMAXPROCS'   => values['max_cpus']
     }.merge(type_config).merge(type_config)
 
     config_keys.each do |key, data|
-      it {
-        is_expected.to contain_concat__fragment("restic_fragment_#{title}_#{key}").with(
-          {
-            'content' => sensitive("#{key}='#{data}'"),
-            'target'  => config_file,
-          },
-        )
-      }
+      if data != :undef
+        it {
+          is_expected.to contain_concat__fragment("restic_fragment_#{title}_#{key}").with(
+            {
+              'content' => sensitive("#{key}='#{data}'"),
+              'target'  => config_file,
+            },
+          )
+        }
+      end
     end
   else
     it {
