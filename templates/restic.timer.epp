@@ -4,6 +4,7 @@
 | -%>
 [Timer]
 OnCalendar=<%= $timer %>
+Persistent=true
 <% if $timer_random_delay != undef { -%>
 RandomizedDelaySec=<%= $timer_random_delay %>
 <% } -%>
