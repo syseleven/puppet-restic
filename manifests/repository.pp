@@ -52,6 +52,9 @@
 # @param global_flags
 #   Default global flags for `restic <flags>`. See `restic --help`
 #
+# @param max_cpus
+#   Limit the number of CPU cores restic can use by setting the env variable GOMAXPROCS
+#
 # @param gcs_credentials
 #   Default path to the file containing the Google Cloud service account credentials which allows access to the bucket. Need to be downloaded from Google Cloud see: https://cloud.google.com/iam/docs/service-account-creds
 #
@@ -124,6 +127,7 @@ define restic::repository (
   Optional[Variant[Array[String[1]],String[1]]] $forget_post_cmd      = undef,
   Optional[String[1]]                           $forget_timer         = undef,
   Optional[Variant[Array[String[1]],String[1]]] $global_flags         = undef,
+  Optional[Integer[1]]                          $max_cpus             = undef,
   Optional[Stdlib::Absolutepath]                $gcs_credentials_path = undef,
   Optional[Variant[Sensitive[String],String]]   $gcs_repository       = undef,
   Optional[Variant[Sensitive[String],String]]   $gcs_project_id       = undef,
@@ -162,6 +166,7 @@ define restic::repository (
   $_forget_pre_cmd       = $forget_pre_cmd.lest || { $restic::forget_pre_cmd }
   $_forget_timer         = $forget_timer.lest || { $restic::forget_timer }
   $_global_flags         = pick($global_flags, $restic::global_flags)
+  $_max_cpus             = $max_cpus.lest || { $restic::max_cpus }
   $_gcs_credentials_path = $gcs_credentials_path.lest || { $restic::gcs_credentials_path }
   $_gcs_project_id       = $gcs_project_id.lest || { $restic::gcs_project_id }
   $_gcs_repository       = $gcs_repository.lest || { $restic::gcs_repository }
@@ -250,12 +255,15 @@ define restic::repository (
 
     $config_keys = {
       'GLOBAL_FLAGS' => [ $_global_flags, ].flatten.join(' '),
+      'GOMAXPROCS'   => $_max_cpus,
     } + $type_config
 
     $config_keys.each |$config,$data| {
-      concat::fragment { "restic_fragment_${title}_${config}":
-        content => Sensitive("${config}='${data.unwrap}'"), # unwarp, becase concating Sensitive strings doesn't work.
-        target  => $config_file,
+      if $data != undef {
+        concat::fragment { "restic_fragment_${title}_${config}":
+          content => Sensitive("${config}='${data.unwrap}'"), # unwarp, becase concating Sensitive strings doesn't work.
+          target  => $config_file,
+        }
       }
     }
   } else {
