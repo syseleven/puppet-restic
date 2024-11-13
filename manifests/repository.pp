@@ -103,8 +103,17 @@
 # @param restore_timer
 #   Default systemd timer for restore see: https://wiki.archlinux.de/title/Systemd/Timers
 #
+# @param sftp_port
+#   The port used to connect with sft. If the port is 22, this does not need to be filled in as Restic automatically uses this port
+#
+# @param sftp_repository
+#  The path to the repository on the SFTP server
+#
+# @param sftp_user
+#   The user who connects to the SFTP repository
+#
 # @param type
-#   Default name for the Restic repository. Only S3 supported
+#   Default name for the Restic repository. s3, gs, rest and sftp are supported.
 #
 # @param user
 #   Default user for systemd services
@@ -144,6 +153,9 @@ define restic::repository (
   Optional[Variant[Array[String[1]],String[1]]] $restore_pre_cmd      = undef,
   Optional[String[1]]                           $restore_snapshot     = undef,
   Optional[String[1]]                           $restore_timer        = undef,
+  Optional[Variant[Sensitive[String],String]]   $sftp_port            = undef,
+  Optional[Variant[Sensitive[String],String]]   $sftp_repository      = undef,
+  Optional[Variant[Sensitive[String],String]]   $sftp_user            = undef,
   Optional[Restic::Repository::Type]            $type                 = undef,
   Optional[String[1]]                           $user                 = undef,
 ) {
@@ -183,6 +195,9 @@ define restic::repository (
   $_restore_pre_cmd      = $restore_pre_cmd.lest || { $restic::restore_pre_cmd }
   $_restore_snapshot     = pick($restore_snapshot, $restic::restore_snapshot)
   $_restore_timer        = $restore_timer.lest || { $restic::restore_timer }
+  $_sftp_port            = $sftp_port.lest || { $restic::sftp_port }
+  $_sftp_repository      = $sftp_repository.lest || { $restic::sftp_repository }
+  $_sftp_user            = $sftp_user.lest || { $restic::sftp_user }
   $_type                 = pick($type, $restic::type)
   $_user                 = pick($user, $restic::user)
 
@@ -199,18 +214,24 @@ define restic::repository (
     default => undef,
   }
 
-  $repository_value = case $_type {
+  $repository = case $_type {
     'gs': {
       "${_type}:${_bucket}:/${_gcs_repository}"
     }
-    default: {
-      "${_type}:${_host.unwrap}/${_bucket}"
+    'sftp': {
+      if $_sftp_port {
+        "${_type}://${_sftp_user}@[${_host.unwrap}]:${_sftp_port}//${_sftp_repository}"
+      } else {
+        "${_type}://${_sftp_user}@[${_host.unwrap}]://${_sftp_repository}"
+      }
     }
-  }
-
-  $repository = $_bucket ? {
-    undef   => "${_type}:${_host.unwrap}",
-    default => $repository_value,
+    default: {
+      if $_bucket {
+        "${_type}:${_host.unwrap}/${_bucket}"
+      } else {
+        "${_type}:${_host.unwrap}"
+      }
+    }
   }
 
   $config_file   = "/etc/default/restic_${title}"
@@ -275,72 +296,78 @@ define restic::repository (
   ##
   ## backup service
   ##
-  $backup_commands = [
-    $_backup_pre_cmd,
-    "${_binary} backup \$GLOBAL_FLAGS \$BACKUP_FLAGS",
-    $_backup_post_cmd,
-  ].flatten.delete_undef_values
 
-  $backup_keys = {
-    'BACKUP_FLAGS' => [ $_backup_flags, $_backup_path, ].flatten.join(' '),
+  if $_enable_backup {
+    $backup_commands = [
+      $_backup_pre_cmd,
+      "${_binary} backup \$GLOBAL_FLAGS \$BACKUP_FLAGS",
+      $_backup_post_cmd,
+    ].flatten.delete_undef_values
+
+    $backup_keys = {
+      'BACKUP_FLAGS' => [ $_backup_flags, $_backup_path, ].flatten.join(' '),
+    }
+
+    restic::service { "restic_backup_${title}":
+      commands            => $backup_commands.delete_undef_values,
+      config              => $config_file,
+      configs             => $backup_keys,
+      enable              => $_enable_backup,
+      group               => $_group,
+      timer               => $_backup_timer,
+      success_exit_status => $success_exit_status,
+      user                => $_user,
+    }
   }
-
-  restic::service { "restic_backup_${title}":
-    commands            => $backup_commands.delete_undef_values,
-    config              => $config_file,
-    configs             => $backup_keys,
-    enable              => $_enable_backup,
-    group               => $_group,
-    timer               => $_backup_timer,
-    success_exit_status => $success_exit_status,
-    user                => $_user,
-  }
-
   ##
   ## forget service
   ##
-  $forget_commands = [
-    $_forget_pre_cmd,
-    "${_binary} forget \$GLOBAL_FLAGS \$FORGET_FLAGS",
-    $_forget_post_cmd,
-  ].flatten.delete_undef_values
 
-  $forgets       = $_forget.map |$k,$v| { "--${k} ${v}" }
-  $forget_prune  = if $_prune { '--prune' } else { undef }
-  $forget_keys   = {
-    'FORGET_FLAGS' => [ $forgets, $forget_prune, $_forget_flags, ].delete_undef_values.flatten.join(' '),
+  if $_enable_forget {
+    $forget_commands = [
+      $_forget_pre_cmd,
+      "${_binary} forget \$GLOBAL_FLAGS \$FORGET_FLAGS",
+      $_forget_post_cmd,
+    ].flatten.delete_undef_values
+
+    $forgets       = $_forget.map |$k,$v| { "--${k} ${v}" }
+    $forget_prune  = if $_prune { '--prune' } else { undef }
+    $forget_keys   = {
+      'FORGET_FLAGS' => [ $forgets, $forget_prune, $_forget_flags, ].delete_undef_values.flatten.join(' '),
+    }
+
+    restic::service { "restic_forget_${title}":
+      commands => $forget_commands.delete_undef_values,
+      config   => $config_file,
+      configs  => $forget_keys,
+      enable   => $_enable_forget,
+      group    => $_group,
+      timer    => $_forget_timer,
+      user     => $_user,
+    }
   }
-
-  restic::service { "restic_forget_${title}":
-    commands => $forget_commands.delete_undef_values,
-    config   => $config_file,
-    configs  => $forget_keys,
-    enable   => $_enable_forget,
-    group    => $_group,
-    timer    => $_forget_timer,
-    user     => $_user,
-  }
-
   ##
   ## restore service
   ##
-  $restore_commands = [
-    $_restore_pre_cmd,
-    "${_binary} restore \$GLOBAL_FLAGS \$RESTORE_FLAGS",
-    $_restore_post_cmd,
-  ].flatten.delete_undef_values
+  if $_enable_restore {
+    $restore_commands = [
+      $_restore_pre_cmd,
+      "${_binary} restore \$GLOBAL_FLAGS \$RESTORE_FLAGS",
+      $_restore_post_cmd,
+    ].flatten.delete_undef_values
 
-  $restore_keys = {
-    'RESTORE_FLAGS' => [ "-t ${_restore_path}", $_restore_flags, $_restore_snapshot, ].flatten.join(' '),
-  }
+    $restore_keys = {
+      'RESTORE_FLAGS' => [ "-t ${_restore_path}", $_restore_flags, $_restore_snapshot, ].flatten.join(' '),
+    }
 
-  restic::service { "restic_restore_${title}":
-    commands => $restore_commands.delete_undef_values,
-    config   => $config_file,
-    configs  => $restore_keys,
-    enable   => $_enable_restore,
-    group    => $_group,
-    timer    => $_restore_timer,
-    user     => $_user,
+    restic::service { "restic_restore_${title}":
+      commands => $restore_commands.delete_undef_values,
+      config   => $config_file,
+      configs  => $restore_keys,
+      enable   => $_enable_restore,
+      group    => $_group,
+      timer    => $_restore_timer,
+      user     => $_user,
+    }
   }
 }
