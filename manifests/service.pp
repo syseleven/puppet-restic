@@ -28,10 +28,12 @@ define restic::service (
     $ensure = 'absent'
   }
 
-  # This might seem odd to you, but it's actually thought-out
-  # We use a concat resource for the unit file, because it allows people
-  # to inject pre/post scripts into the restic backup job. This is helpful
-  # if you want to e.g. trigger database backups/cleanups
+  ##
+  ## This might seem odd to you, but it's actually thought-out
+  ## We use a concat resource for the unit file, because it allows people
+  ## to inject pre/post scripts into the restic backup job. This is helpful
+  ## if you want to e.g. trigger database backups/cleanups
+  ##
   concat { "/lib/systemd/system/${title}.service":
     ensure         => $ensure,
     ensure_newline => true,

@@ -25,7 +25,7 @@ class { 'restic':
 classes:
   - restic
 
-restic::backups:
+restic::repositories:
   backup1:
     backup_path: '/absolute/path'
     id: 's3id'
@@ -55,7 +55,7 @@ restic::type: 's3'
 restic::forget:
   keep-last: 10
 restic::prune: true
-restic::backups:
+restic::repositories:
   backup1:
     backup_path: '/absolute/path1'
     bucket: 'bucket_name/backup1'
@@ -76,7 +76,7 @@ restic::id: 's3id'
 restic::key: 's3key'
 restic::host: 'host.name'
 restic::type: 's3'
-restic::backups:
+restic::repositories:
   backup1:
     backup_path: '/absolute/path1'
     bucket: 'bucket_name/backup1'
@@ -97,7 +97,7 @@ restic::id: 's3id'
 restic::key: 's3key'
 restic::host: 'host.name'
 restic::type: 's3'
-restic::backups:
+restic::repositories:
   restore1:
     restore_path: '/another/path1'
     enable_restore: true

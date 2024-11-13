@@ -10,6 +10,7 @@
 #   restic::repository::pre_command { 'mysql':
 #     command => 'rm -rf /opt/xtrabackup',
 #   }
+#
 define restic::repository::post_command (
   Variant[Array[String[1]],String[1]] $command,
   String[1]                           $repository_title = $title,
@@ -19,11 +20,11 @@ define restic::repository::post_command (
 ) {
   $service_title = "restic_${restic_command}_${repository_title}"
   $command_md5   = md5(String($command))
-  $_allow_fail = $allow_fail ? {
+  $_command      = [ $command, ].flatten.map |$c| { "ExecStartPost=${_allow_fail}${c}" }
+  $_allow_fail   = $allow_fail ? {
     true  => '-',
     false => '',
   }
-  $_command    = [$command].flatten.map |$c| { "ExecStartPost=${_allow_fail}${c}" }
 
   concat::fragment { "/lib/systemd/system/${service_title}.service-post_commands-${command_md5}":
     target  => "/lib/systemd/system/${service_title}.service",
