@@ -1,6 +1,6 @@
 {
   "name": "syseleven-restic",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "author": "Mike Fröhner @ SysEleven GmbH",
   "summary": "Puppet module to configure Restic systemd service to backup/forget/restore data.",
   "license": "Apache-2.0",

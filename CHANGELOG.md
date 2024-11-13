@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.8.0
+
+**Features**
+- allow limiting number of cores in use from Svante Bengtson <svante@swantzter.se>
+- add SFTP backend support from DriteMorina <morinadrite@gmail.com>
+
+**Bugfixes**
+- code style and bugs in examples
+
 ## Release 2.7.0
 
 **Features**
