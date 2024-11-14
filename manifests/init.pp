@@ -199,13 +199,11 @@ class restic (
   String[1]                                     $user                 = 'root',
 ) {
   contain restic::package
-  contain restic::reload
 
   $repositories.each |$repository, $config| {
     restic::repository { $repository:
-      * => $config,
+      *       => $config,
+      require => Class['restic::package'],
     }
-
-    Class['restic::package'] -> Restic::Repository[$repository] ~> Class['restic::reload']
   }
 }
