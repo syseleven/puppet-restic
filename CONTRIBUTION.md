@@ -55,3 +55,4 @@ After you have pushed your feature branch to your github space you can create a 
 
 ## Eat some cookies
 Since we all love cookies and to celebrate the open source culture eat some cookies of your choice.
+
